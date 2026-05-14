@@ -950,14 +950,15 @@ app.use((err, req, res, next) => {
 
 // ===== SERVE FRONTEND (production) =====
 const path = require('path');
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '..')));
-    // Serve index.html for all non-API routes
-    app.get('*', (req, res, next) => {
-        if (req.path.startsWith('/api')) return next();
-        res.sendFile(path.join(__dirname, '..', 'index.html'));
+// Always serve frontend static files
+app.use(express.static(path.join(__dirname, '..')));
+app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    const file = path.join(__dirname, '..', req.path === '/' ? 'index.html' : req.path);
+    res.sendFile(file, err => {
+        if (err) res.sendFile(path.join(__dirname, '..', 'index.html'));
     });
-}
+});
 
 // ===== START SERVER =====
 
