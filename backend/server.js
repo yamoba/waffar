@@ -446,16 +446,11 @@ app.get('/api/products/suggestions', requireDB, async (req, res) => {
     try {
         const q = (req.query.q || '').trim();
         if (!q || q.length < 2) return res.json({ success: true, data: [] });
-        const reSugg = new RegExp(q.replace(/[-[]/{}()*+?.\^$|#]/g, "        const _reSugg = new RegExp(q, 'i');
+        const _reSugg = new RegExp(q, 'i');
         const products = await Product.find(
             { $or: [{ name: _reSugg }, { brand: _reSugg }, { category: _reSugg }] },
             { name: 1, category: 1, lowestPrice: 1, basePrice: 1 }
-        ).limit(6).lean();"), "i");
-        const products = await Product.find(
-            { $or: [{ name: reSugg }, { brand: reSugg }, { category: reSugg }] },
-            { name: 1, category: 1, lowestPrice: 1, basePrice: 1 }
         ).limit(6).lean();
-        res.json({ success: true, data: products.map(p => ({ _id: p._id, name: p.name, category: p.category, price: p.lowestPrice || p.basePrice })) });
     } catch(e) { res.status(500).json({ success: false, message: e.message }); }
 });
 app.get('/api/products/:id', requireDB, async (req, res) => {
