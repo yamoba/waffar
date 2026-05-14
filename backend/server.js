@@ -14,8 +14,9 @@ const Comparison = require('./models/Comparison');
 const AISearch = require('./models/AISearch');
 const PriceAlert = require('./models/PriceAlert');
 
-// Import seeder
+// Import seeder and scraper
 const seeder = require('./scrapers/seeder');
+const scraperModule = require('./scrapers/index');
 
 const app = express();
 
@@ -72,6 +73,87 @@ function requireDB(req, res, next) {
     next();
 }
 
+// ===== BACKGROUND SCRAPER JOB =====
+let scraperRunning = false;
+let lastScraperRun = null;
+async function backgroundScraper() {
+    if (scraperRunning) return;
+    scraperRunning = true;
+    try {
+        console.log('🔄 Background scraper started...');
+        lastScraperRun = new Date();
+        // Run all store seeds periodically
+        const storeData = seeder.runAll();
+        let totalFound = 0, totalSaved = 0;
+        for (const { store, products } of storeData) {
+            try {
+                const productMap = new Map();
+                for (const p of products) {
+                    const key = p.name;
+                    if (productMap.has(key)) {
+                        const existing = productMap.get(key);
+                        const storeNames = new Set(existing.stores.map(s => s.storeName));
+                        for (const store of p.stores) {
+                            if (!storeNames.has(store.storeName)) {
+                                existing.stores.push(store);
+                                storeNames.add(store.storeName);
+                            }
+                        }
+                        existing.lowestPrice = Math.min(existing.lowestPrice, p.lowestPrice);
+                    } else {
+                        productMap.set(key, p);
+                    }
+                }
+                const merged = Array.from(productMap.values());
+                const ops = merged.map(p => ({
+                    updateOne: {
+                        filter: { name: p.name },
+                        update: {
+                            $set: {
+                                lowestPrice: p.lowestPrice,
+                                discount: p.discount,
+                                rating: p.rating,
+                                reviewCount: p.reviewCount,
+                                isTrending: p.isTrending,
+                                updatedAt: new Date(),
+                            },
+                            $addToSet: { stores: { $each: p.stores } },
+                            $push: { priceHistory: { $each: p.priceHistory.slice(-1), $slice: -50 } },
+                            $setOnInsert: { createdAt: new Date(), views: 0 },
+                        },
+                        upsert: true,
+                    }
+                }));
+                for (let i = 0; i < ops.length; i += 100) {
+                    const r = await Product.bulkWrite(ops.slice(i, i + 100), { ordered: false }).catch(() => ({}));
+                    totalSaved += (r.upsertedCount || 0) + (r.modifiedCount || 0);
+                }
+                totalFound += products.length;
+            } catch (e) {
+                console.error(`[Scraper] ${store} error:`, e.message);
+            }
+        }
+        console.log(`✓ Scraper completed: ${totalFound} products, ${totalSaved} saved`);
+    } catch (e) {
+        console.error('[Scraper] Failed:', e.message);
+    } finally {
+        scraperRunning = false;
+    }
+}
+
+// Run scraper every 6 hours after first seed
+let scraperScheduled = false;
+function scheduleBackgroundScraper() {
+    if (scraperScheduled) return;
+    scraperScheduled = true;
+    // First run after 2 hours, then every 6 hours
+    setTimeout(() => {
+        backgroundScraper();
+        setInterval(backgroundScraper, 6 * 60 * 60 * 1000);
+    }, 2 * 60 * 60 * 1000);
+    console.log('⏱️ Background scraper scheduled (runs every 6 hours)');
+}
+
 // Seed demo user on startup
 async function seedDemoUser() {
     try {
@@ -119,6 +201,9 @@ async function seedDemoUser() {
         } else {
             console.log(`✓ ${productCount} products already loaded`);
         }
+
+        // Schedule background scraper
+        scheduleBackgroundScraper();
     } catch (err) {
         console.error('Database seed failed:', err.message);
     }
@@ -882,19 +967,45 @@ app.put('/api/alerts/:id', authMiddleware, async (req, res) => {
 
 app.get('/api/auth/stats', authMiddleware, async (req, res) => {
     try {
-        const [user, comparisonsCount, alertsCount, searchesCount] = await Promise.all([
+        const [user, comparisonsCount, alertsCount, searchesCount, wishlistItems] = await Promise.all([
             User.findById(req.userId),
             Comparison.countDocuments({ userId: req.userId }),
             PriceAlert.countDocuments({ userId: req.userId, isActive: true }),
-            AISearch.countDocuments({ userId: req.userId })
+            AISearch.countDocuments({ userId: req.userId }),
+            user ? Product.find({ _id: { $in: user.wishlist || [] } }).select('name lowestPrice basePrice image').lean() : Promise.resolve([])
+        ]);
+        const totalSavings = (wishlistItems || []).reduce((sum, p) => sum + Math.max(0, (p.basePrice || p.lowestPrice) - (p.lowestPrice || 0)), 0);
+        res.json({
+            success: true,
+            data: {
+                user: { name: user?.name, email: user?.email, avatar: user?.avatar },
+                wishlistCount: user?.wishlist?.length || 0,
+                wishlistItems: wishlistItems || [],
+                comparisonsCount,
+                alertsCount,
+                searchesCount,
+                estimatedSavings: Math.round(totalSavings),
+                lastLogin: user?.lastLogin
+            }
+        });
+    } catch(e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.get('/api/dashboard/summary', authMiddleware, async (req, res) => {
+    try {
+        const [alertsCount, activeAlerts, topSavings, recentSearches] = await Promise.all([
+            PriceAlert.countDocuments({ userId: req.userId }),
+            PriceAlert.find({ userId: req.userId, isActive: true }).limit(5).lean(),
+            Product.find({ _id: { $in: await Comparison.distinct('products', { userId: req.userId }) } }).sort({ discount: -1 }).limit(3).lean(),
+            AISearch.find({ userId: req.userId }).sort({ createdAt: -1 }).limit(5).select('query createdAt').lean()
         ]);
         res.json({
             success: true,
             data: {
-                wishlistCount: user?.wishlist?.length || 0,
-                comparisonsCount,
                 alertsCount,
-                searchesCount
+                activeAlerts: activeAlerts.map(a => ({ id: a._id, productName: a.productName, targetPrice: a.targetPrice })),
+                topSavingsProducts: topSavings,
+                recentSearches
             }
         });
     } catch(e) { res.status(500).json({ success: false, message: e.message }); }
