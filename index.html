@@ -149,18 +149,57 @@
         </div>
     </section>
 
+    <!-- TRENDING SECTION -->
+    <section class="section" style="background:linear-gradient(135deg,rgba(251,146,60,0.04),rgba(217,119,6,0.04));padding:80px 20px">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;flex-wrap:wrap;gap:16px">
+                <div>
+                    <h2 class="section-title" style="margin-bottom:8px" data-reveal>🔥 Trending Now</h2>
+                    <p style="color:var(--text-light);font-size:14px" data-reveal>Most viewed and loved products</p>
+                </div>
+                <a href="price_compare.html?sort=trending" class="btn btn-outline btn-small" data-reveal>View All →</a>
+            </div>
+            <div class="products-grid" id="trending-grid">
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+            </div>
+        </div>
+    </section>
+
     <!-- DEALS SECTION -->
     <section class="section" style="background:linear-gradient(135deg,rgba(0,212,255,0.04),rgba(99,102,241,0.04));padding:80px 20px">
         <div class="container">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;flex-wrap:wrap;gap:16px">
                 <div>
-                    <h2 class="section-title" style="margin-bottom:8px" data-reveal>&#x1F525; Hot Deals Today</h2>
-                    <p style="color:var(--text-light);font-size:14px" data-reveal>Prices updated in real-time</p>
+                    <h2 class="section-title" style="margin-bottom:8px" data-reveal>💰 Best Deals</h2>
+                    <p style="color:var(--text-light);font-size:14px" data-reveal>Heavy discounts across all categories</p>
                 </div>
-                <a href="price_compare.html" class="btn btn-outline btn-small" data-reveal>View All Deals &rarr;</a>
+                <a href="price_compare.html?sort=discount" class="btn btn-outline btn-small" data-reveal>View All Deals →</a>
             </div>
             <div class="products-grid" id="deals-grid">
-                <!-- Skeleton placeholders -->
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURED SECTION -->
+    <section class="section" style="background:linear-gradient(135deg,rgba(168,85,247,0.04),rgba(236,72,153,0.04));padding:80px 20px">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;flex-wrap:wrap;gap:16px">
+                <div>
+                    <h2 class="section-title" style="margin-bottom:8px" data-reveal>⭐ Featured Products</h2>
+                    <p style="color:var(--text-light);font-size:14px" data-reveal>Highly rated and recommended</p>
+                </div>
+                <a href="price_compare.html?sort=rating" class="btn btn-outline btn-small" data-reveal>See More →</a>
+            </div>
+            <div class="products-grid" id="featured-grid">
                 <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
                 <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
                 <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
@@ -343,8 +382,8 @@
         async function loadDeals() {
             const grid = document.getElementById('deals-grid');
             try {
-                const result = await getProducts({ limit: 8, sort: 'discount' });
-                const products = result.data || result.products || [];
+                const result = await getDeals(8);
+                const products = result.data || [];
                 if (!products.length) {
                     grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">No deals available right now. <a href="price_compare.html">Browse all products</a></p>';
                     return;
@@ -352,6 +391,36 @@
                 grid.innerHTML = products.map(p => renderProductCard(p)).join('');
             } catch(e) {
                 grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">Unable to load deals. <a href="price_compare.html">Browse manually &rarr;</a></p>';
+            }
+        }
+
+        async function loadTrending() {
+            const grid = document.getElementById('trending-grid');
+            try {
+                const result = await getTrending(6);
+                const products = result.data || [];
+                if (!products.length) {
+                    grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">No trending products. <a href="price_compare.html">Browse products</a></p>';
+                    return;
+                }
+                grid.innerHTML = products.map(p => renderProductCard(p)).join('');
+            } catch(e) {
+                grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">Unable to load trending. <a href="price_compare.html">Browse manually &rarr;</a></p>';
+            }
+        }
+
+        async function loadFeatured() {
+            const grid = document.getElementById('featured-grid');
+            try {
+                const result = await getFeatured(8);
+                const products = result.data || [];
+                if (!products.length) {
+                    grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">Featured products coming soon. <a href="price_compare.html">Browse all</a></p>';
+                    return;
+                }
+                grid.innerHTML = products.map(p => renderProductCard(p)).join('');
+            } catch(e) {
+                grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">Unable to load featured. <a href="price_compare.html">Browse manually &rarr;</a></p>';
             }
         }
 
@@ -393,7 +462,9 @@
                 });
             }
 
+            loadTrending();
             loadDeals();
+            loadFeatured();
         });
     </script>
 </body>

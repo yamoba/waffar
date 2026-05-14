@@ -86,8 +86,41 @@ async function seedDemoUser() {
             });
             console.log('✓ Demo user created: demo@waffar.eg / demo123456');
         }
+
+        // Auto-seed products if none exist
+        const productCount = await Product.countDocuments();
+        if (productCount === 0) {
+            console.log('⏳ Seeding products from all stores...');
+            const storeData = seeder.runAll();
+            const allProducts = [];
+            for (const { store, products } of storeData) {
+                allProducts.push(...products);
+            }
+            const productMap = new Map();
+            for (const p of allProducts) {
+                const key = p.name;
+                if (productMap.has(key)) {
+                    const existing = productMap.get(key);
+                    const storeNames = new Set(existing.stores.map(s => s.storeName));
+                    for (const store of p.stores) {
+                        if (!storeNames.has(store.storeName)) {
+                            existing.stores.push(store);
+                            storeNames.add(store.storeName);
+                        }
+                    }
+                    existing.lowestPrice = Math.min(existing.lowestPrice, p.lowestPrice);
+                } else {
+                    productMap.set(key, p);
+                }
+            }
+            const merged = Array.from(productMap.values());
+            const result = await Product.insertMany(merged);
+            console.log(`✓ Seeded ${result.length} products from ${storeData.length} stores`);
+        } else {
+            console.log(`✓ ${productCount} products already loaded`);
+        }
     } catch (err) {
-        console.error('Demo user seed failed:', err.message);
+        console.error('Database seed failed:', err.message);
     }
 }
 
@@ -457,6 +490,38 @@ app.get('/api/products/suggestions', requireDB, async (req, res) => {
         res.json({ success: true, data: products });
     } catch(e) { res.status(500).json({ success: false, message: e.message }); }
 });
+
+app.get('/api/products/featured', requireDB, async (req, res) => {
+    try {
+        const products = await Product.find({ isFeatured: true })
+            .sort({ rating: -1, reviewCount: -1 })
+            .limit(8)
+            .lean();
+        res.json({ success: true, data: products });
+    } catch(e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.get('/api/categories', requireDB, async (req, res) => {
+    try {
+        const cats = await Product.distinct('category');
+        res.json({ success: true, data: (cats || []).sort() });
+    } catch(e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.get('/api/products/category/:cat', requireDB, async (req, res) => {
+    try {
+        const limit = Math.min(parseInt(req.query.limit) || 12, 50);
+        const page = Math.max(parseInt(req.query.page) || 0, 0);
+        const products = await Product.find({ category: new RegExp(req.params.cat, 'i') })
+            .sort({ isTrending: -1, rating: -1, reviewCount: -1 })
+            .skip(page * limit)
+            .limit(limit)
+            .lean();
+        const total = await Product.countDocuments({ category: new RegExp(req.params.cat, 'i') });
+        res.json({ success: true, data: products, total, page, limit });
+    } catch(e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
 app.get('/api/products/:id', requireDB, async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);

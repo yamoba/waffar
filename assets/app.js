@@ -729,6 +729,30 @@ async function getTrending(limit = 6) {
     }
 }
 
+async function getFeatured(limit = 8) {
+    try {
+        return await apiCall(`/products/featured?limit=${limit}`, 'GET');
+    } catch (e) {
+        return { success: true, data: [] };
+    }
+}
+
+async function getCategories() {
+    try {
+        return await apiCall('/categories', 'GET');
+    } catch (e) {
+        return { success: true, data: [] };
+    }
+}
+
+async function getProductsByCategory(category, limit = 12, page = 0) {
+    try {
+        return await apiCall(`/products/category/${encodeURIComponent(category)}?limit=${limit}&page=${page}`, 'GET');
+    } catch (e) {
+        return { success: true, data: [], total: 0 };
+    }
+}
+
 async function getSearchSuggestions(q) {
     try {
         if (!q || q.length < 2) return { success: true, data: [] };
@@ -913,7 +937,7 @@ function renderProductCard(product, options = {}) {
                 </div>
                 <div class="product-actions">
                     <button class="btn btn-primary btn-small" onclick="viewProduct('${product._id}')">View</button>
-                    <button class="btn btn-outline btn-small" onclick="showStorePrices('${product._id}', `${product.name?.slice(0,40)}`)" title="Compare store prices">🏪 ${(product.stores||[]).length > 1 ? (product.stores||[]).length+' stores' : 'Prices'}</button>
+                    <button class="btn btn-outline btn-small" onclick="showStorePrices('${product._id}', '${product.name?.slice(0,40)}')" title="Compare store prices">🏪 ${(product.stores||[]).length > 1 ? (product.stores||[]).length+' stores' : 'Prices'}</button>
                     <button class="btn btn-ghost btn-small" onclick="comparisonManager.add(${JSON.stringify({_id: product._id, name: product.name}).replace(/"/g, '&quot;')})">+</button>
                 </div>
             </div>
