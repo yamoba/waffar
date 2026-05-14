@@ -17,8 +17,9 @@ const PriceAlert = require('./models/PriceAlert');
 const app = express();
 
 // Middleware
-app.use(cors({
-    app.use(cors({ origin: true, credentials: true }));ll responses for speed
+app.use(cors({ origin: true, credentials: true }));
+
+// Compress all responses for speed
 try { const compression = require('compression'); app.use(compression()); } catch(e) {}
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
