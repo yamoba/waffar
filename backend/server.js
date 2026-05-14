@@ -926,6 +926,20 @@ setTimeout(() => {
     if (mongoose.connection.readyState === 1) scheduleAutoScrape();
     else mongoose.connection.once('connected', scheduleAutoScrape);
 }, 2000);
+// DEBUG — remove after fixing
+app.get('/debug', (req, res) => {
+    const fs = require('fs');
+    const publicPath = path.join(__dirname, 'public');
+    let files = [];
+    try { files = fs.readdirSync(publicPath); } catch(e) { files = ['ERROR: ' + e.message]; }
+    res.json({
+        __dirname,
+        publicPath,
+        publicExists: fs.existsSync(publicPath),
+        files,
+        cwd: process.cwd()
+    });
+});
 // ===== HEALTH CHECK =====
 
 app.get('/api/health', (req, res) => {
