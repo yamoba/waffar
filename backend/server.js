@@ -14,6 +14,9 @@ const Comparison = require('./models/Comparison');
 const AISearch = require('./models/AISearch');
 const PriceAlert = require('./models/PriceAlert');
 
+// Import seeder
+const seeder = require('./scrapers/seeder');
+
 const app = express();
 
 // Middleware
@@ -713,40 +716,33 @@ app.post('/api/demo/add-products', async (req, res) => {
             return res.status(200).json({ success: true, message: `${existingCount} products already loaded` });
         }
 
-        const now = new Date();
-        const sampleProducts = [
-            { name: 'Apple iPhone 15 Pro 256GB', brand: 'Apple', category: 'Phones', basePrice: 22999, discount: 5, rating: 4.8, reviews: 1250, isTrending: true, tags: ['phone','iphone','apple','5g'], description: 'Latest iPhone with titanium design, A17 Pro chip, and 48MP camera system.', stores: [{ store: 'Amazon Egypt', price: 22999, inStock: true }, { store: 'Noon', price: 23499, inStock: true }, { store: 'Jumia', price: 22499, inStock: true }] },
-            { name: 'Samsung Galaxy S24 Ultra 512GB', brand: 'Samsung', category: 'Phones', basePrice: 24999, discount: 8, rating: 4.7, reviews: 890, isTrending: true, tags: ['samsung','phone','android','s-pen'], description: 'Premium Android phone with built-in S Pen and 200MP camera.', stores: [{ store: 'Amazon Egypt', price: 24999, inStock: true }, { store: 'Noon', price: 25499, inStock: false }, { store: 'Jumia', price: 24499, inStock: true }] },
-            { name: 'MacBook Air M3 13-inch', brand: 'Apple', category: 'Laptops', basePrice: 32999, discount: 3, rating: 4.9, reviews: 580, isNew: true, tags: ['macbook','apple','laptop','m3'], description: 'Incredibly thin and fast laptop with Apple M3 chip and all-day battery.', stores: [{ store: 'Amazon Egypt', price: 32999, inStock: true }, { store: 'iStyle Egypt', price: 33500, inStock: true }] },
-            { name: 'Dell XPS 15 9530', brand: 'Dell', category: 'Laptops', basePrice: 28500, discount: 10, rating: 4.6, reviews: 340, tags: ['dell','laptop','windows','oled'], description: 'Premium Windows laptop with OLED display and Intel Core i7.', stores: [{ store: 'Amazon Egypt', price: 28500, inStock: true }, { store: 'Noon', price: 29000, inStock: true }, { store: 'Carrefour', price: 27999, inStock: true }] },
-            { name: 'Sony WH-1000XM5 Headphones', brand: 'Sony', category: 'Audio', basePrice: 4999, discount: 15, rating: 4.9, reviews: 2100, isFeatured: true, tags: ['headphones','sony','noise-cancelling','wireless'], description: 'Industry-leading noise cancelling with 30-hour battery and premium sound.', stores: [{ store: 'Amazon Egypt', price: 4999, inStock: true }, { store: 'Noon', price: 5299, inStock: true }, { store: 'Jumia', price: 4799, inStock: true }] },
-            { name: 'Samsung 65" 4K QLED TV QN90C', brand: 'Samsung', category: 'Electronics', basePrice: 18999, discount: 12, rating: 4.7, reviews: 430, isFeatured: true, tags: ['samsung','tv','4k','qled','smart-tv'], description: 'Quantum dot technology with Neo Quantum Processor and ultra-bright display.', stores: [{ store: 'Jumia', price: 18999, inStock: true }, { store: 'Carrefour', price: 19499, inStock: true }, { store: 'Amazon Egypt', price: 18499, inStock: false }] },
-        ];
-        const sampleProducts2 = [
-            { name: 'PlayStation 5 Console', brand: 'Sony', category: 'Gaming', basePrice: 15999, discount: 0, rating: 4.8, reviews: 3200, isTrending: true, tags: ['ps5','playstation','gaming','console'], description: 'Next-gen gaming with ultra-high speed SSD and DualSense controller.', stores: [{ store: 'Amazon Egypt', price: 15999, inStock: true }, { store: 'Jumia', price: 16299, inStock: false }, { store: 'Noon', price: 15799, inStock: true }] },
-            { name: 'ASUS ROG Gaming Laptop G15', brand: 'ASUS', category: 'Gaming', basePrice: 21999, discount: 7, rating: 4.6, reviews: 280, tags: ['asus','rog','gaming','laptop','rtx'], description: 'High-performance gaming laptop with RTX 4060 and 165Hz display.', stores: [{ store: 'Amazon Egypt', price: 21999, inStock: true }, { store: 'Noon', price: 22500, inStock: true }] },
-            { name: 'Nike Air Max 270 React', brand: 'Nike', category: 'Sports', basePrice: 1299, discount: 20, rating: 4.5, reviews: 780, tags: ['nike','shoes','running','sports'], description: 'Lightweight running shoes with Air Max cushioning technology.', stores: [{ store: 'Amazon Egypt', price: 1299, inStock: true }, { store: 'Jumia', price: 1199, inStock: true }, { store: 'Noon', price: 1349, inStock: true }] },
-            { name: 'LG Washing Machine 8kg TurboWash', brand: 'LG', category: 'Home Appliances', basePrice: 8999, discount: 5, rating: 4.4, reviews: 520, tags: ['washing-machine','lg','home-appliance'], description: 'Front load washing machine with AI Direct Drive motor and steam wash.', stores: [{ store: 'Carrefour', price: 8999, inStock: true }, { store: 'Amazon Egypt', price: 8699, inStock: true }] },
-            { name: 'Dyson V12 Detect Slim', brand: 'Dyson', category: 'Home Appliances', basePrice: 7499, discount: 8, rating: 4.8, reviews: 310, isFeatured: true, tags: ['dyson','vacuum','cordless','cleaning'], description: 'Laser dust detection and intelligent suction for perfect cleaning.', stores: [{ store: 'Amazon Egypt', price: 7499, inStock: true }, { store: 'Noon', price: 7799, inStock: true }] },
-            { name: 'Philips Air Fryer XXL 7.3L', brand: 'Philips', category: 'Home Appliances', basePrice: 2799, discount: 15, rating: 4.6, reviews: 1100, tags: ['airfryer','philips','cooking','kitchen'], description: 'XL family-sized air fryer with fat removal technology.', stores: [{ store: 'Carrefour', price: 2799, inStock: true }, { store: 'Amazon Egypt', price: 2699, inStock: true }, { store: 'Jumia', price: 2599, inStock: true }] },
-        ];
-        const sampleProducts3 = [
-            { name: 'Apple iPad Pro 12.9" M2', brand: 'Apple', category: 'Tablets', basePrice: 18999, discount: 5, rating: 4.8, reviews: 420, tags: ['ipad','apple','tablet','m2'], description: 'ProMotion XDR display with Apple M2 chip and Liquid Retina XDR.', stores: [{ store: 'Amazon Egypt', price: 18999, inStock: true }, { store: 'Noon', price: 19499, inStock: true }] },
-            { name: 'Nespresso Vertuo Next Coffee Machine', brand: 'Nespresso', category: 'Home Appliances', basePrice: 2999, discount: 10, rating: 4.7, reviews: 890, tags: ['coffee','nespresso','machine','kitchen'], description: 'One touch coffee machine with centrifusion brewing technology.', stores: [{ store: 'Amazon Egypt', price: 2999, inStock: true }, { store: 'Carrefour', price: 3199, inStock: true }] },
-            { name: 'Samsung Galaxy Watch 6 44mm', brand: 'Samsung', category: 'Watches', basePrice: 4299, discount: 12, rating: 4.5, reviews: 560, tags: ['smartwatch','samsung','wearable','health'], description: 'Advanced health monitoring with body composition and sleep tracking.', stores: [{ store: 'Amazon Egypt', price: 4299, inStock: true }, { store: 'Noon', price: 4499, inStock: true }, { store: 'Jumia', price: 4199, inStock: true }] },
-            { name: 'Anker Soundcore Life Q35 Headphones', brand: 'Anker', category: 'Audio', basePrice: 899, discount: 10, rating: 4.4, reviews: 2300, isFeatured: true, tags: ['headphones','anker','wireless','budget'], description: 'Multi-mode ANC headphones with LDAC Hi-Res audio at a great price.', stores: [{ store: 'Amazon Egypt', price: 899, inStock: true }, { store: 'Jumia', price: 849, inStock: true }] },
-            { name: 'L\'Oreal Revitalift Triple Power Serum', brand: "L'Oreal", category: 'Beauty', basePrice: 599, discount: 20, rating: 4.6, reviews: 1800, tags: ['serum','loreal','skincare','beauty'], description: 'Powered by Pro-Retinol, Vitamin C and Hyaluronic Acid for youthful skin.', stores: [{ store: 'Amazon Egypt', price: 599, inStock: true }, { store: 'Carrefour', price: 629, inStock: true }] },
-            { name: 'Adidas Ultraboost 22 Running Shoes', brand: 'Adidas', category: 'Sports', basePrice: 1599, discount: 15, rating: 4.7, reviews: 950, tags: ['adidas','shoes','ultraboost','running'], description: 'Responsive running shoes with BOOST midsole for energy return.', stores: [{ store: 'Amazon Egypt', price: 1599, inStock: true }, { store: 'Jumia', price: 1499, inStock: true }, { store: 'Noon', price: 1649, inStock: true }] },
-        ];
+        const storeData = seeder.runAll();
+        const allProducts = [];
+        for (const { store, products } of storeData) {
+            allProducts.push(...products);
+        }
 
-        const all = [...sampleProducts, ...sampleProducts2, ...sampleProducts3].map(p => ({
-            ...p,
-            lowestPrice: Math.min(...(p.stores || []).map(s => s.price).filter(Boolean), p.basePrice),
-            priceHistory: [{ price: p.basePrice, store: 'base', date: new Date(now - 30*24*60*60*1000) }, { price: Math.round(p.basePrice * 1.05), store: 'base', date: new Date(now - 15*24*60*60*1000) }, { price: p.lowestPrice || p.basePrice, store: 'base', date: now }]
-        }));
+        const productMap = new Map();
+        for (const p of allProducts) {
+            const key = p.name;
+            if (productMap.has(key)) {
+                const existing = productMap.get(key);
+                const storeNames = new Set(existing.stores.map(s => s.storeName));
+                for (const store of p.stores) {
+                    if (!storeNames.has(store.storeName)) {
+                        existing.stores.push(store);
+                        storeNames.add(store.storeName);
+                    }
+                }
+                existing.lowestPrice = Math.min(existing.lowestPrice, p.lowestPrice);
+            } else {
+                productMap.set(key, p);
+            }
+        }
 
-        const inserted = await Product.insertMany(all);
-        res.status(201).json({ success: true, message: `${inserted.length} products loaded!`, data: inserted });
+        const merged = Array.from(productMap.values());
+        const inserted = await Product.insertMany(merged);
+        res.status(201).json({ success: true, message: `${inserted.length} products loaded from ${storeData.length} stores!`, data: inserted });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
