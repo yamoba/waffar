@@ -954,6 +954,7 @@ app.get('/api/health', (req, res) => {
 // ===== ERROR HANDLING =====
 
 // ===== SERVE FRONTEND =====
+const path = require('path');
 const FRONTEND = path.join(__dirname, 'public');
 app.use(express.static(FRONTEND));
 app.get('*', (req, res) => {
