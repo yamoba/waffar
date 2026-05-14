@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waffar.eg - Smart Price Comparison for Egypt</title>
+    <link rel="stylesheet" href="assets/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <nav class="container">
+            <a href="index.html" class="logo">&#x1F4B0; Waffar</a>
+
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="price_compare.html">Compare</a></li>
+                <li><a href="ai-search.html">AI Search</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode">&#x1F319;</button>
+                <div id="nav-auth">
+                    <a href="login.html" class="btn btn-outline btn-small">Login</a>
+                    <a href="signup.html" class="btn btn-primary btn-small">Sign Up</a>
+                </div>
+                <div id="user-menu-wrap" style="display:none;position:relative">
+                    <button id="user-menu-btn">
+                        <span id="user-avatar" style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));display:flex;align-items:center;justify-content:center;color:var(--bg-dark);font-weight:700;font-size:12px">U</span>
+                        <span id="user-name">User</span>
+                        <span>&#x25BE;</span>
+                    </button>
+                    <div id="user-dropdown">
+                        <button onclick="window.location.href='dashboard.html'">&#x1F4CA; Dashboard</button>
+                        <button onclick="logoutUser()">&#x1F6AA; Logout</button>
+                    </div>
+                </div>
+                <button class="hamburger" id="hamburger" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MOBILE NAV -->
+    <div class="mobile-nav" id="mobile-nav">
+        <a href="index.html">Home</a>
+        <a href="price_compare.html">Compare Prices</a>
+        <a href="ai-search.html">AI Search</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="login.html">Login</a>
+        <a href="signup.html">Sign Up</a>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero-modern">
+        <div class="container">
+            <div class="hero-eyebrow" data-reveal>
+                <span>&#x2728;</span> Egypt's #1 Price Comparison Platform
+            </div>
+
+            <h1 class="hero-title-modern" data-reveal data-delay="100">
+                Never Pay More<br>Than You Should
+            </h1>
+
+            <p class="hero-subtitle-modern" data-reveal data-delay="200">
+                Compare prices across 15+ stores in Egypt instantly.
+                Let AI find the best deals tailored to your needs.
+            </p>
+
+            <div class="hero-search-bar" data-reveal data-delay="250">
+                <input type="text" id="hero-search" placeholder="Search for iPhone 15, Samsung TV, Nike shoes..."
+                    onkeydown="if(event.key==='Enter') heroSearch()">
+                <button class="hero-search-btn" onclick="heroSearch()">Search &#x1F50D;</button>
+            </div>
+
+            <div class="hero-cta" data-reveal data-delay="300">
+                <a href="price_compare.html" class="btn btn-primary btn-large">&#x1F4CB; Browse Products</a>
+                <a href="ai-search.html" class="btn btn-outline btn-large" style="border-color:rgba(255,255,255,0.4);color:white">
+                    &#x1F916; Try AI Search
+                </a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="hero-stat" data-reveal data-delay="350">
+                    <div class="hero-stat-number"><span data-count="50000" data-suffix="+">0+</span></div>
+                    <div class="hero-stat-label">Products Tracked</div>
+                </div>
+                <div class="hero-stat" data-reveal data-delay="400">
+                    <div class="hero-stat-number"><span data-count="15" data-suffix="+">0+</span></div>
+                    <div class="hero-stat-label">Stores Connected</div>
+                </div>
+                <div class="hero-stat" data-reveal data-delay="450">
+                    <div class="hero-stat-number"><span data-count="35" data-suffix="%">0%</span></div>
+                    <div class="hero-stat-label">Average Savings</div>
+                </div>
+                <div class="hero-stat" data-reveal data-delay="500">
+                    <div class="hero-stat-number"><span data-count="100000" data-suffix="+">0+</span></div>
+                    <div class="hero-stat-label">Happy Shoppers</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="section" style="padding:80px 20px">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:48px">
+                <h2 class="section-title" data-reveal>Why Smart Shoppers Choose <span class="gradient-text">Waffar</span></h2>
+                <p class="section-subtitle" style="margin:0 auto" data-reveal data-delay="100">Everything you need to shop smarter, not harder</p>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card" data-reveal data-delay="100">
+                    <div class="feature-icon">&#x26A1;</div>
+                    <h3>Instant Price Comparison</h3>
+                    <p>Compare prices from all major Egyptian retailers in real-time. Save up to 60% on your purchases.</p>
+                </div>
+                <div class="feature-card" data-reveal data-delay="200">
+                    <div class="feature-icon">&#x1F916;</div>
+                    <h3>AI-Powered Search</h3>
+                    <p>Describe what you want in natural language. Our Claude AI finds the best matches and deals.</p>
+                </div>
+                <div class="feature-card" data-reveal data-delay="300">
+                    <div class="feature-icon">&#x1F514;</div>
+                    <h3>Price Drop Alerts</h3>
+                    <p>Set your target price and get instant notifications when products go on sale. Never miss a deal.</p>
+                </div>
+                <div class="feature-card" data-reveal data-delay="400">
+                    <div class="feature-icon">&#x1F4C8;</div>
+                    <h3>Price History Charts</h3>
+                    <p>See full price history over time. Know if now is the right time to buy or wait for a better deal.</p>
+                </div>
+                <div class="feature-card" data-reveal data-delay="100">
+                    <div class="feature-icon">&#x2764;&#xFE0F;</div>
+                    <h3>Smart Wishlist</h3>
+                    <p>Save and organize favorites. Track price changes on your wishlist items automatically.</p>
+                </div>
+                <div class="feature-card" data-reveal data-delay="200">
+                    <div class="feature-icon">&#x1F4F1;</div>
+                    <h3>Works Everywhere</h3>
+                    <p>Fully responsive for mobile, tablet, and desktop. Compare prices on the go, anytime.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DEALS SECTION -->
+    <section class="section" style="background:linear-gradient(135deg,rgba(0,212,255,0.04),rgba(99,102,241,0.04));padding:80px 20px">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;flex-wrap:wrap;gap:16px">
+                <div>
+                    <h2 class="section-title" style="margin-bottom:8px" data-reveal>&#x1F525; Hot Deals Today</h2>
+                    <p style="color:var(--text-light);font-size:14px" data-reveal>Prices updated in real-time</p>
+                </div>
+                <a href="price_compare.html" class="btn btn-outline btn-small" data-reveal>View All Deals &rarr;</a>
+            </div>
+            <div class="products-grid" id="deals-grid">
+                <!-- Skeleton placeholders -->
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CATEGORIES SECTION -->
+    <section class="section" style="padding:80px 20px">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:40px">
+                <h2 class="section-title" data-reveal>Browse by Category</h2>
+                <p class="section-subtitle" style="margin:0 auto" data-reveal>Find deals in your favorite categories</p>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px">
+                <a href="price_compare.html?category=Electronics" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="100">
+                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F4BB;</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Electronics</div>
+                </a>
+                <a href="price_compare.html?category=Phones" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="150">
+                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F4F1;</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Phones</div>
+                </a>
+                <a href="price_compare.html?category=Home+Appliances" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="200">
+                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F3E0;</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Home</div>
+                </a>
+                <a href="price_compare.html?category=Fashion" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="250">
+                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F457;</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Fashion</div>
+                </a>
+                <a href="price_compare.html?category=Gaming" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="300">
+                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F3AE;</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Gaming</div>
+                </a>
+                <a href="price_compare.html?category=Sports" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="350">
+                    <div style="font-size:2.5rem;margin-bottom:10px">&#x26BD;</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Sports</div>
+                </a>
+                <a href="price_compare.html?category=Beauty" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="400">
+                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F484;</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Beauty</div>
+                </a>
+                <a href="price_compare.html?category=Books" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="450">
+                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F4DA;</div>
+                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Books</div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="section" style="padding:80px 20px">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:48px">
+                <h2 class="section-title" data-reveal>What Our Users Say</h2>
+                <p class="section-subtitle" style="margin:0 auto" data-reveal>Thousands of Egyptians saving money every day</p>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+                <div class="testimonial-card" data-reveal data-delay="100">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <p class="testimonial-text">"I saved over 2,000 EGP on my laptop by comparing prices on Waffar. The price history chart showed me when prices were at their lowest!"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">AH</div>
+                        <div>
+                            <div class="testimonial-name">Ahmed Hassan</div>
+                            <div class="testimonial-role">Software Engineer, Cairo</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card" data-reveal data-delay="200">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <p class="testimonial-text">"The AI search is incredible! I described 'a good phone under 10,000 EGP with great camera' and it found me perfect options instantly."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">SM</div>
+                        <div>
+                            <div class="testimonial-name">Sara Mahmoud</div>
+                            <div class="testimonial-role">Teacher, Alexandria</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card" data-reveal data-delay="300">
+                    <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                    <p class="testimonial-text">"Price drop alerts are a game changer. I set an alert for a Samsung TV and got notified 3 days later when the price dropped by 1,500 EGP!"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">MK</div>
+                        <div>
+                            <div class="testimonial-name">Mohamed Khalil</div>
+                            <div class="testimonial-role">Business Owner, Giza</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEWSLETTER / CTA -->
+    <section style="padding:0 20px 80px">
+        <div class="container">
+            <div class="newsletter-section" data-reveal>
+                <div class="container">
+                    <h2 class="newsletter-title">&#x1F4E7; Get the Best Deals Daily</h2>
+                    <p class="newsletter-subtitle">Join 100,000+ smart shoppers. Get personalized deals straight to your inbox.</p>
+                    <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+                        <input type="email" id="newsletter-email" placeholder="Enter your email address" required>
+                        <button type="submit" class="btn btn-primary" style="border-radius:50px;padding:14px 28px;white-space:nowrap">
+                            Subscribe Free &#x1F680;
+                        </button>
+                    </form>
+                    <p style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:12px">No spam, ever. Unsubscribe anytime.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">&#x1F4B0; Waffar</a>
+                    <p class="footer-desc">Egypt's smartest price comparison platform. We help you find the best deals across 15+ major retailers — saving you time and money.</p>
+                    <div class="footer-social">
+                        <a href="#" title="Twitter">&#x1D54F;</a>
+                        <a href="#" title="Facebook">f</a>
+                        <a href="#" title="Instagram">&#x1F4F8;</a>
+                        <a href="#" title="LinkedIn">in</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="footer-col-title">Platform</div>
+                    <ul class="footer-links">
+                        <li><a href="price_compare.html">Compare Prices</a></li>
+                        <li><a href="ai-search.html">AI Search</a></li>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                        <li><a href="signup.html">Create Account</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="footer-col-title">Categories</div>
+                    <ul class="footer-links">
+                        <li><a href="price_compare.html?category=Electronics">Electronics</a></li>
+                        <li><a href="price_compare.html?category=Phones">Phones</a></li>
+                        <li><a href="price_compare.html?category=Fashion">Fashion</a></li>
+                        <li><a href="price_compare.html?category=Gaming">Gaming</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="footer-col-title">Support</div>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; 2025 Waffar.eg &mdash; Smart Price Comparison</span>
+                <span>Made with &#x2764;&#xFE0F; for Egyptian shoppers</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/app.js"></script>
+    <script>
+        function heroSearch() {
+            const q = document.getElementById('hero-search').value.trim();
+            if (q) window.location.href = `price_compare.html?q=${encodeURIComponent(q)}`;
+        }
+
+        function subscribeNewsletter(e) {
+            e.preventDefault();
+            const email = document.getElementById('newsletter-email').value;
+            Toast.success('You\'re subscribed! Watch your inbox for deals.', 'Subscribed!');
+            document.getElementById('newsletter-email').value = '';
+        }
+
+        async function loadDeals() {
+            const grid = document.getElementById('deals-grid');
+            try {
+                const result = await getProducts({ limit: 8, sort: 'discount' });
+                const products = result.data || result.products || [];
+                if (!products.length) {
+                    grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">No deals available right now. <a href="price_compare.html">Browse all products</a></p>';
+                    return;
+                }
+                grid.innerHTML = products.map(p => renderProductCard(p)).join('');
+            } catch(e) {
+                grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">Unable to load deals. <a href="price_compare.html">Browse manually &rarr;</a></p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateNavigation();
+
+            // User menu
+            const userMenuWrap = document.getElementById('user-menu-wrap');
+            const navAuth = document.getElementById('nav-auth');
+            if (auth.isAuthenticated()) {
+                if (navAuth) navAuth.style.display = 'none';
+                if (userMenuWrap) {
+                    userMenuWrap.style.display = 'block';
+                    const av = document.getElementById('user-avatar');
+                    const nm = document.getElementById('user-name');
+                    if (av) av.textContent = (auth.user?.name || 'U')[0].toUpperCase();
+                    if (nm) nm.textContent = (auth.user?.name || 'User').split(' ')[0];
+                }
+            }
+
+            // User dropdown toggle
+            const userMenuBtn = document.getElementById('user-menu-btn');
+            const dropdown = document.getElementById('user-dropdown');
+            if (userMenuBtn && dropdown) {
+                userMenuBtn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                });
+                document.addEventListener('click', () => { dropdown.style.display = 'none'; });
+            }
+
+            // Hamburger
+            const hb = document.getElementById('hamburger');
+            const mn = document.getElementById('mobile-nav');
+            if (hb && mn) {
+                hb.addEventListener('click', () => {
+                    hb.classList.toggle('open');
+                    mn.classList.toggle('open');
+                });
+            }
+
+            loadDeals();
+        });
+    </script>
+</body>
+</html>

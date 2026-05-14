@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Waffar.eg</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <nav class="container">
+            <a href="index.html" class="logo">&#x1F4B0; Waffar</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="price_compare.html">Compare</a></li>
+                <li><a href="ai-search.html">AI Search</a></li>
+                <li><a href="dashboard.html" style="color:var(--primary-color)">Dashboard</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="theme-toggle">&#x1F319;</button>
+                <div id="user-menu-wrap" style="position:relative">
+                    <button id="user-menu-btn">
+                        <span id="user-avatar" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));display:flex;align-items:center;justify-content:center;color:var(--bg-dark);font-weight:700;font-size:14px">U</span>
+                        <span id="user-name">User</span>
+                        <span>&#x25BE;</span>
+                    </button>
+                    <div id="user-dropdown">
+                        <button onclick="window.location.href='index.html'">&#x1F3E0; Home</button>
+                        <button onclick="logoutUser()">&#x1F6AA; Logout</button>
+                    </div>
+                </div>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- NOT AUTHENTICATED -->
+    <div id="auth-gate" style="display:none;min-height:70vh;display:none;align-items:center;justify-content:center;flex-direction:column;padding:60px 20px;text-align:center">
+        <div style="font-size:72px;margin-bottom:20px">&#x1F512;</div>
+        <h2 style="font-size:24px;margin-bottom:10px;color:var(--text-dark)">Login Required</h2>
+        <p style="color:var(--text-light);margin-bottom:24px">Please login to access your personal dashboard</p>
+        <div style="display:flex;gap:12px">
+            <a href="login.html" class="btn btn-primary btn-large">Login</a>
+            <a href="signup.html" class="btn btn-outline btn-large">Sign Up</a>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="main-dashboard" style="display:none">
+
+        <!-- PROFILE HEADER -->
+        <div style="background:var(--bg-lighter);border-bottom:1px solid var(--border-color);padding:28px 0">
+            <div class="container">
+                <div class="profile-header">
+                    <div class="profile-avatar-large" id="profile-avatar-large">U</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="profile-name">Loading...</div>
+                        <div class="profile-email" id="profile-email">loading@example.com</div>
+                        <div class="profile-badges">
+                            <span class="badge badge-primary">&#x1F4B0; Smart Shopper</span>
+                            <span class="badge badge-success" id="member-since">Member</span>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap">
+                        <button class="btn btn-outline btn-small" onclick="openTab('settings')">&#x2699;&#xFE0F; Settings</button>
+                        <button class="btn btn-danger btn-small" onclick="logoutUser()">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container" style="padding:28px 20px 60px">
+
+            <!-- STATS GRID -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px">
+                <div class="stat-card primary">
+                    <div class="stat-icon primary">&#x1F4CA;</div>
+                    <div class="stat-content">
+                        <div class="stat-label">Price Comparisons</div>
+                        <div class="stat-value" id="stat-comparisons">0</div>
+                        <div class="stat-change up">&#x2197; This month</div>
+                    </div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon success">&#x2764;&#xFE0F;</div>
+                    <div class="stat-content">
+                        <div class="stat-label">Wishlist Items</div>
+                        <div class="stat-value" id="stat-wishlist">0</div>
+                        <div class="stat-change up">&#x2197; Saved products</div>
+                    </div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon warning">&#x1F514;</div>
+                    <div class="stat-content">
+                        <div class="stat-label">Price Alerts</div>
+                        <div class="stat-value" id="stat-alerts">0</div>
+                        <div class="stat-change">Active alerts</div>
+                    </div>
+                </div>
+                <div class="stat-card secondary">
+                    <div class="stat-icon secondary">&#x1F916;</div>
+                    <div class="stat-content">
+                        <div class="stat-label">AI Searches</div>
+                        <div class="stat-value" id="stat-searches">0</div>
+                        <div class="stat-change up">&#x2197; Queries made</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABS -->
+            <div class="tabs" id="dashboard-tabs">
+                <button class="tab-btn active" onclick="openTab('overview')" data-tab="overview">&#x1F4CA; Overview</button>
+                <button class="tab-btn" onclick="openTab('wishlist')" data-tab="wishlist">
+                    &#x2764;&#xFE0F; Wishlist <span class="tab-badge" id="wishlist-count">0</span>
+                </button>
+                <button class="tab-btn" onclick="openTab('alerts')" data-tab="alerts">
+                    &#x1F514; Alerts <span class="tab-badge" id="alerts-count">0</span>
+                </button>
+                <button class="tab-btn" onclick="openTab('comparisons')" data-tab="comparisons">&#x1F4CB; Comparisons</button>
+                <button class="tab-btn" onclick="openTab('settings')" data-tab="settings">&#x2699;&#xFE0F; Settings</button>
+                <button class="tab-btn" onclick="openTab('admin')" data-tab="admin">&#x1F916; Admin</button>
+            </div>
+
+            <!-- OVERVIEW TAB -->
+            <div class="tab-panel active" id="tab-overview">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+                    <div>
+                        <h3 style="font-weight:700;margin-bottom:16px;font-size:15px;color:var(--text-dark)">&#x1F3AF; Quick Actions</h3>
+                        <div style="display:flex;flex-direction:column;gap:10px">
+                            <a href="price_compare.html" class="card" style="text-decoration:none;display:flex;align-items:center;gap:14px;padding:16px">
+                                <div class="stat-icon primary" style="width:40px;height:40px;border-radius:10px;font-size:18px">&#x1F50D;</div>
+                                <div>
+                                    <div style="font-weight:700;font-size:14px;color:var(--text-dark)">Compare Prices</div>
+                                    <div style="font-size:12px;color:var(--text-light)">Browse all products and compare</div>
+                                </div>
+                            </a>
+                            <a href="ai-search.html" class="card" style="text-decoration:none;display:flex;align-items:center;gap:14px;padding:16px">
+                                <div class="stat-icon secondary" style="width:40px;height:40px;border-radius:10px;font-size:18px">&#x1F916;</div>
+                                <div>
+                                    <div style="font-weight:700;font-size:14px;color:var(--text-dark)">AI Search</div>
+                                    <div style="font-size:12px;color:var(--text-light)">Describe what you need in natural language</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="font-weight:700;margin-bottom:16px;font-size:15px;color:var(--text-dark)">&#x1F4E2; Savings Tracker</h3>
+                        <div class="card" style="padding:20px">
+                            <div style="font-size:13px;color:var(--text-light);margin-bottom:8px">Total Potential Savings</div>
+                            <div style="font-size:32px;font-weight:900;color:var(--success-color);margin-bottom:12px" id="total-savings">0 EGP</div>
+                            <div style="font-size:12px;color:var(--text-lighter);margin-bottom:16px">Based on your wishlist vs lowest prices</div>
+                            <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text-dark)">Comparison Activity</div>
+                            <div class="progress-container">
+                                <div class="progress-bar-fill" id="activity-bar" style="width:0%"></div>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-lighter);margin-top:6px">
+                                <span>0</span><span id="activity-label">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WISHLIST TAB -->
+            <div class="tab-panel" id="tab-wishlist">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                    <h3 style="font-weight:700;font-size:15px;color:var(--text-dark)">My Wishlist</h3>
+                    <a href="price_compare.html" class="btn btn-primary btn-small">&#x2B; Add Products</a>
+                </div>
+                <div id="wishlist-grid" class="products-grid">
+                    <p style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-light)">Loading wishlist...</p>
+                </div>
+            </div>
+
+            <!-- ALERTS TAB -->
+            <div class="tab-panel" id="tab-alerts">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                    <h3 style="font-weight:700;font-size:15px;color:var(--text-dark)">Price Alerts</h3>
+                    <button class="btn btn-primary btn-small" onclick="showCreateAlert()">&#x2B; Create Alert</button>
+                </div>
+                <div id="create-alert-form" style="display:none" class="card" style="margin-bottom:20px;padding:20px">
+                    <h4 style="margin-bottom:16px;font-weight:700">New Price Alert</h4>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                        <div class="form-group" style="margin:0">
+                            <label style="font-size:13px">Product Name</label>
+                            <input type="text" id="alert-product" placeholder="e.g. iPhone 15">
+                        </div>
+                        <div class="form-group" style="margin:0">
+                            <label style="font-size:13px">Target Price (EGP)</label>
+                            <input type="number" id="alert-price" placeholder="e.g. 15000" min="0">
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px">
+                        <button class="btn btn-primary btn-small" onclick="saveAlert()">Save Alert</button>
+                        <button class="btn btn-ghost btn-small" onclick="document.getElementById('create-alert-form').style.display='none'">Cancel</button>
+                    </div>
+                </div>
+                <div id="alerts-list">
+                    <p style="text-align:center;padding:40px;color:var(--text-light)">Loading alerts...</p>
+                </div>
+            </div>
+
+            <!-- COMPARISONS TAB -->
+            <div class="tab-panel" id="tab-comparisons">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                    <h3 style="font-weight:700;font-size:15px;color:var(--text-dark)">Saved Comparisons</h3>
+                    <a href="price_compare.html" class="btn btn-outline btn-small">New Comparison</a>
+                </div>
+                <div id="comparisons-list">
+                    <p style="text-align:center;padding:40px;color:var(--text-light)">Loading comparisons...</p>
+                </div>
+            </div>
+
+            <!-- SETTINGS TAB -->
+            <div class="tab-panel" id="tab-settings">
+                <div style="max-width:600px">
+                    <div class="card" style="margin-bottom:20px">
+                        <h3 style="font-weight:700;margin-bottom:20px;font-size:16px;color:var(--text-dark)">&#x1F464; Profile Settings</h3>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="settings-name" placeholder="Your name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="settings-email" placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Country</label>
+                            <select id="settings-country">
+                                <option>Egypt</option><option>UAE</option><option>Saudi Arabia</option><option>Kuwait</option><option>Jordan</option><option>Other</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+                    </div>
+                    <div class="card" style="margin-bottom:20px">
+                        <h3 style="font-weight:700;margin-bottom:20px;font-size:16px;color:var(--text-dark)">&#x1F916; Claude API Key</h3>
+                        <p style="font-size:13px;color:var(--text-light);margin-bottom:16px">Add your own Claude API key for unlimited AI searches</p>
+                        <div class="form-group">
+                            <label>Claude API Key</label>
+                            <input type="password" id="claude-key" placeholder="sk-ant-...">
+                        </div>
+                        <button class="btn btn-secondary" onclick="saveClaudeKey()">Save API Key</button>
+                    </div>
+                    <div class="card">
+                        <h3 style="font-weight:700;margin-bottom:16px;font-size:16px;color:var(--text-dark)">&#x1F3A8; Appearance</h3>
+                        <div style="display:flex;align-items:center;justify-content:space-between">
+                            <div>
+                                <div style="font-weight:600;font-size:14px">Dark Mode</div>
+                                <div style="font-size:12px;color:var(--text-light)">Switch between light and dark theme</div>
+                            </div>
+                            <button class="btn btn-outline btn-small" onclick="themeManager.toggle()" id="theme-toggle-settings">
+                                Toggle Theme
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer style="background:var(--bg-darker);color:rgba(255,255,255,0.5);padding:24px;text-align:center;font-size:13px;border-top:1px solid var(--border-color)">
+        &copy; 2025 Waffar.eg
+    </footer>
+
+    <script src="assets/app.js"></script>
+    <script>
+        function openTab(name) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+            const panel = document.getElementById('tab-' + name);
+            if (panel) panel.classList.add('active');
+        }
+
+        function showCreateAlert() {
+            const f = document.getElementById('create-alert-form');
+            f.style.display = f.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function saveAlert() {
+            const name = document.getElementById('alert-product').value.trim();
+            const price = parseFloat(document.getElementById('alert-price').value);
+            if (!name || !price) { Toast.warning('Please fill in all fields'); return; }
+            try {
+                await createPriceAlert({ productName: name, targetPrice: price });
+                document.getElementById('create-alert-form').style.display = 'none';
+                document.getElementById('alert-product').value = '';
+                document.getElementById('alert-price').value = '';
+                loadAlerts();
+            } catch(e) {}
+        }
+
+        async function saveProfile() {
+            const name = document.getElementById('settings-name').value;
+            const country = document.getElementById('settings-country').value;
+            if (!name) { Toast.warning('Name is required'); return; }
+            await updateProfile({ name, country });
+        }
+
+        async function saveClaudeKey() {
+            const key = document.getElementById('claude-key').value.trim();
+            if (!key) { Toast.warning('Please enter an API key'); return; }
+            await setClaudeApiKey(key);
+        }
+
+        async function loadDashboard() {
+            try {
+                const profile = await getProfile();
+                const user = profile.user || profile.data || {};
+
+                document.getElementById('profile-name').textContent = user.name || 'User';
+                document.getElementById('profile-email').textContent = user.email || '';
+                document.getElementById('profile-avatar-large').textContent = (user.name||'U')[0].toUpperCase();
+                document.getElementById('user-avatar').textContent = (user.name||'U')[0].toUpperCase();
+                document.getElementById('user-name').textContent = (user.name||'User').split(' ')[0];
+                document.getElementById('settings-name').value = user.name || '';
+                document.getElementById('settings-email').value = user.email || '';
+                if (user.country) document.getElementById('settings-country').value = user.country;
+
+                const joined = user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', {month:'short',year:'numeric'}) : 'Recently';
+                document.getElementById('member-since').textContent = 'Since ' + joined;
+            } catch(e) { console.error(e); }
+
+            loadWishlist();
+            loadAlerts();
+            loadComparisons();
+            loadStats();
+        }
+
+        async function loadWishlist() {
+            const grid = document.getElementById('wishlist-grid');
+            const countEl = document.getElementById('wishlist-count');
+            try {
+                const result = await getWishlist();
+                const items = result.data || result.wishlist || [];
+                countEl.textContent = items.length;
+                document.getElementById('stat-wishlist').textContent = items.length;
+                if (!items.length) {
+                    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 20px">
+                        <div style="font-size:48px;margin-bottom:12px">&#x2665;&#xFE0F;</div>
+                        <p style="color:var(--text-light);margin-bottom:16px">No wishlist items yet</p>
+                        <a href="price_compare.html" class="btn btn-primary">Browse Products</a>
+                    </div>`;
+                    return;
+                }
+                grid.innerHTML = items.map(item => {
+                    const p = item.product || item;
+                    return renderProductCard(p, { wishlistIds: items.map(i => (i.product||i)._id) });
+                }).join('');
+            } catch(e) {
+                grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-light)">Failed to load wishlist</p>';
+            }
+        }
+
+        async function loadAlerts() {
+            const list = document.getElementById('alerts-list');
+            const countEl = document.getElementById('alerts-count');
+            try {
+                const result = await getPriceAlerts();
+                const alerts = result.data || [];
+                countEl.textContent = alerts.length;
+                document.getElementById('stat-alerts').textContent = alerts.length;
+                if (!alerts.length) {
+                    list.innerHTML = `<div style="text-align:center;padding:48px 20px">
+                        <div style="font-size:48px;margin-bottom:12px">&#x1F514;</div>
+                        <p style="color:var(--text-light);margin-bottom:16px">No price alerts yet</p>
+                        <button class="btn btn-primary" onclick="showCreateAlert()">Create Your First Alert</button>
+                    </div>`;
+                    return;
+                }
+                list.innerHTML = alerts.map(a => `
+                    <div class="alert-card" style="margin-bottom:10px">
+                        <div class="alert-card-icon">&#x1F514;</div>
+                        <div class="alert-card-info">
+                            <div class="alert-card-name">${a.productName || 'Unknown Product'}</div>
+                            <div class="alert-card-target">Target: <span>${UIManager.formatPrice(a.targetPrice)}</span></div>
+                        </div>
+                        <div class="alert-card-status" style="display:flex;gap:8px;align-items:center">
+                            <span class="badge badge-${a.isActive ? 'success' : 'secondary'}">${a.isActive ? 'Active' : 'Paused'}</span>
+                            <button class="btn btn-ghost btn-xs" onclick="deleteAlert('${a._id}')" title="Delete alert" style="color:var(--danger-color)">&#x1F5D1;</button>
+                        </div>
+                    </div>`).join('');
+            } catch(e) {
+                list.innerHTML = '<p style="text-align:center;padding:40px;color:var(--text-light)">Unable to load alerts</p>';
+            }
+        }
+
+        async function deleteAlert(id) {
+            await deletePriceAlert(id);
+            loadAlerts();
+        }
+
+        async function loadComparisons() {
+            const list = document.getElementById('comparisons-list');
+            try {
+                const result = await getComparisons();
+                const items = result.data || [];
+                document.getElementById('stat-comparisons').textContent = items.length;
+                if (!items.length) {
+                    list.innerHTML = `<div style="text-align:center;padding:48px 20px">
+                        <div style="font-size:48px;margin-bottom:12px">&#x1F4CB;</div>
+                        <p style="color:var(--text-light);margin-bottom:16px">No saved comparisons</p>
+                        <a href="price_compare.html" class="btn btn-primary">Compare Products</a>
+                    </div>`;
+                    return;
+                }
+                list.innerHTML = items.map(c => `
+                    <div class="card" style="margin-bottom:12px;padding:16px">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <div>
+                                <div style="font-weight:700;font-size:14px;margin-bottom:4px;color:var(--text-dark)">${c.name || 'Comparison'}</div>
+                                <div style="font-size:12px;color:var(--text-lighter)">${new Date(c.createdAt).toLocaleDateString()}</div>
+                            </div>
+                            <div style="display:flex;gap:8px">
+                                <span class="badge badge-primary">${(c.products||[]).length} products</span>
+                                <button class="btn btn-ghost btn-xs" onclick="deleteComparison('${c._id}').then(()=>loadComparisons())" style="color:var(--danger-color)">&#x1F5D1;</button>
+                            </div>
+                        </div>
+                    </div>`).join('');
+            } catch(e) {
+                list.innerHTML = '<p style="text-align:center;padding:40px;color:var(--text-light)">Failed to load</p>';
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const result = await getAISearchHistory();
+                const searches = result.data || [];
+                document.getElementById('stat-searches').textContent = searches.length;
+            } catch(e) {}
+            const compCount = parseInt(document.getElementById('stat-comparisons').textContent) || 0;
+            const max = Math.max(compCount, 10);
+            document.getElementById('activity-bar').style.width = Math.min((compCount/max)*100, 100) + '%';
+            document.getElementById('activity-label').textContent = compCount + ' total';
+        }
+
+
+            <!-- Admin / Scraper Tab -->
+            <div id="tab-admin" class="tab-panel" style="display:none">
+                <div class="section-header" style="margin-bottom:1.5rem">
+                    <h2>&#x1F916; Data Scraper</h2>
+                    <p style="color:var(--text-muted)">Fetch real product data from 15 major Egyptian stores</p>
+                </div>
+                <div class="glass-card" style="padding:1.5rem;margin-bottom:1.5rem">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                        <h3 style="margin:0">Scrape Status</h3>
+                        <span id="scrape-badge" class="badge badge-secondary">Idle</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1rem;margin-bottom:1.25rem">
+                        <div class="stat-card"><span class="stat-icon">&#x1F4E6;</span><div class="stat-info"><span class="stat-value" id="stat-found">0</span><span class="stat-label">Found</span></div></div>
+                        <div class="stat-card"><span class="stat-icon">&#x1F4BE;</span><div class="stat-info"><span class="stat-value" id="stat-saved">0</span><span class="stat-label">Saved</span></div></div>
+                        <div class="stat-card"><span class="stat-icon">&#x23F1;</span><div class="stat-info"><span class="stat-value" id="stat-duration">—</span><span class="stat-label">Duration</span></div></div>
+                        <div class="stat-card"><span class="stat-icon">&#x26A0;</span><div class="stat-info"><span class="stat-value" id="stat-errors">0</span><span class="stat-label">Errors</span></div></div>
+                    </div>
+                    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+                        <button class="btn btn-gradient" id="btn-scrape-all" onclick="startScrapeAll()">&#x25B6; Run All Sites</button>
+                        <button class="btn" onclick="refreshScrapeStatus()" style="background:var(--glass-bg);border:1px solid var(--border-color)">&#x1F504; Refresh</button>
+                    </div>
+                </div>
+                <h3 style="margin-bottom:1rem">Sites</h3>
+                <div id="scrape-sites-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem">
+                    <div class="skeleton" style="height:80px;border-radius:12px"></div>
+                    <div class="skeleton" style="height:80px;border-radius:12px"></div>
+                    <div class="skeleton" style="height:80px;border-radius:12px"></div>
+                </div>
+            </div>
+
+        // ===== SCRAPER ADMIN =====
+        const SITE_LABELS = {
+            jumia:'Jumia', noon:'Noon', carrefour:'Carrefour Egypt',
+            btech:'B.TECH', '2b':'2B Egypt', elaraby:'El Araby',
+            raneen:'Raneen', homzmart:'Homzmart', namshi:'Namshi',
+            amazon:'Amazon Egypt', ikea:'IKEA Egypt', hm:'H&M Egypt',
+            extra:'eXtra', radioshack:'RadioShack', tradeline:'Tradeline'
+        };
+
+        async function refreshScrapeStatus() {
+            try {
+                const res = await fetch('/api/scrape/status');
+                const data = await res.json();
+                const badge = document.getElementById('scrape-badge');
+                badge.textContent = data.isRunning ? 'Running...' : (data.completedAt ? 'Done' : 'Idle');
+                badge.className = 'badge ' + (data.isRunning ? 'badge-warning' : (data.completedAt ? 'badge-success' : 'badge-secondary'));
+                document.getElementById('stat-found').textContent = data.totalFound || 0;
+                document.getElementById('stat-saved').textContent = data.totalSaved || 0;
+                document.getElementById('stat-errors').textContent = (data.errors||[]).length;
+                if (data.startedAt && data.completedAt) {
+                    const s = Math.round((new Date(data.completedAt) - new Date(data.startedAt)) / 1000);
+                    document.getElementById('stat-duration').textContent = s + 's';
+                }
+                renderSiteCards(data.sites || {});
+                if (data.isRunning) setTimeout(refreshScrapeStatus, 4000);
+            } catch(e) { console.error('Status error', e); }
+        }
+
+        function renderSiteCards(sites) {
+            const grid = document.getElementById('scrape-sites-grid');
+            const allSites = Object.keys(SITE_LABELS);
+            grid.innerHTML = allSites.map(site => {
+                const s = sites[site];
+                const status = s ? s.status : 'pending';
+                const icon = status === 'done' ? '&#x2705;' : status === 'error' ? '&#x274C;' : status === 'running' ? '&#x23F3;' : '&#x23F8;';
+                const color = status === 'done' ? 'var(--success-color)' : status === 'error' ? 'var(--danger-color)' : status === 'running' ? 'var(--warning-color)' : 'var(--text-muted)';
+                return `<div class="glass-card" style="padding:1rem;display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-weight:600;font-size:14px">${SITE_LABELS[site]}</span>
+                        <span style="color:${color}">${icon}</span>
+                    </div>
+                    <div style="font-size:12px;color:var(--text-muted)">${s ? (s.found||0)+' found, '+(s.saved||0)+' saved' : 'Not started'}</div>
+                    <button class="btn btn-ghost btn-xs" onclick="runSingleSite('${site}')" style="font-size:11px;padding:4px 8px;align-self:flex-start">Run</button>
+                </div>`;
+            }).join('');
+        }
+
+        async function startScrapeAll() {
+            const btn = document.getElementById('btn-scrape-all');
+            btn.disabled = true; btn.textContent = 'Starting...';
+            try {
+                await fetch('/api/scrape/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+                setTimeout(refreshScrapeStatus, 1000);
+            } catch(e) { alert('Failed to start scrape: ' + e.message); }
+            btn.disabled = false; btn.textContent = '▶ Run All Sites';
+        }
+
+        async function runSingleSite(site) {
+            try {
+                await fetch(`/api/scrape/sites/${site}`, { method: 'POST' });
+                setTimeout(refreshScrapeStatus, 1500);
+            } catch(e) { alert('Failed: ' + e.message); }
+        }
+
+        // Load scrape status when admin tab is opened
+        const origOpenTab = window.openTab;
+        window.openTab = function(name) {
+            if (typeof origOpenTab === 'function') origOpenTab(name);
+            if (name === 'admin') refreshScrapeStatus();
+        };
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!auth.isAuthenticated()) {
+                document.getElementById('auth-gate').style.display = 'flex';
+                return;
+            }
+            document.getElementById('main-dashboard').style.display = 'block';
+            loadDashboard();
+
+            const userBtn = document.getElementById('user-menu-btn');
+            const userDd = document.getElementById('user-dropdown');
+            if (userBtn && userDd) {
+                userBtn.addEventListener('click', e => { e.stopPropagation(); userDd.style.display = userDd.style.display === 'block' ? 'none' : 'block'; });
+                document.addEventListener('click', () => { userDd.style.display = 'none'; });
+            }
+        });
+    </script>
+</body>
+</html>

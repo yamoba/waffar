@@ -950,14 +950,12 @@ app.use((err, req, res, next) => {
 
 // ===== SERVE FRONTEND (production) =====
 const path = require('path');
-// Always serve frontend static files
-app.use(express.static(path.join(__dirname, '..')));
+// Serve frontend from backend/public/
+const FRONTEND = path.join(__dirname, 'public');
+app.use(express.static(FRONTEND));
 app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api')) return next();
-    const file = path.join(__dirname, '..', req.path === '/' ? 'index.html' : req.path);
-    res.sendFile(file, err => {
-        if (err) res.sendFile(path.join(__dirname, '..', 'index.html'));
-    });
+    res.sendFile(path.join(FRONTEND, 'index.html'));
 });
 
 // ===== START SERVER =====

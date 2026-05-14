@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Prices - Waffar.eg</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <nav class="container">
+            <a href="index.html" class="logo">&#x1F4B0; Waffar</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="price_compare.html" style="color:var(--primary-color)">Compare</a></li>
+                <li><a href="ai-search.html">AI Search</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode">&#x1F319;</button>
+                <div id="nav-auth">
+                    <a href="login.html" class="btn btn-outline btn-small">Login</a>
+                    <a href="signup.html" class="btn btn-primary btn-small">Sign Up</a>
+                </div>
+                <div id="user-menu-wrap" style="display:none;position:relative">
+                    <button id="user-menu-btn">
+                        <span id="user-avatar" style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));display:flex;align-items:center;justify-content:center;color:var(--bg-dark);font-weight:700;font-size:12px">U</span>
+                        <span id="user-name">User</span>
+                    </button>
+                    <div id="user-dropdown">
+                        <button onclick="window.location.href='dashboard.html'">&#x1F4CA; Dashboard</button>
+                        <button onclick="logoutUser()">&#x1F6AA; Logout</button>
+                    </div>
+                </div>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="mobile-nav" id="mobile-nav">
+        <a href="index.html">Home</a>
+        <a href="price_compare.html">Compare Prices</a>
+        <a href="ai-search.html">AI Search</a>
+        <a href="dashboard.html">Dashboard</a>
+    </div>
+
+    <!-- PAGE HEADER -->
+    <div style="background:linear-gradient(135deg,rgba(0,212,255,0.08),rgba(99,102,241,0.08));padding:40px 20px 0;border-bottom:1px solid var(--border-color)">
+        <div class="container">
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;padding-bottom:24px">
+                <div>
+                    <h1 style="font-size:clamp(1.4rem,3vw,2rem);font-weight:800;color:var(--text-dark);margin-bottom:6px">
+                        &#x1F4B0; Compare Prices
+                    </h1>
+                    <p style="color:var(--text-light);font-size:14px">Find the best deals across 15+ Egyptian stores</p>
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap">
+                    <div class="search-wrapper" style="min-width:260px">
+                        <span class="search-icon">&#x1F50D;</span>
+                        <input type="text" id="searchProduct" placeholder="Search products..."
+                            oninput="debouncedSearch()" style="border-radius:50px">
+                    </div>
+                    <button class="btn btn-outline btn-small" onclick="addDemoProducts()" title="Load demo products">
+                        + Demo Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- QUICK CATEGORY TABS -->
+            <div class="tabs" id="category-tabs" style="border-bottom:none;gap:4px;padding-bottom:0">
+                <button class="tab-btn active" onclick="filterByCategory('')" data-cat="">All</button>
+                <button class="tab-btn" onclick="filterByCategory('Electronics')" data-cat="Electronics">Electronics</button>
+                <button class="tab-btn" onclick="filterByCategory('Phones')" data-cat="Phones">&#x1F4F1; Phones</button>
+                <button class="tab-btn" onclick="filterByCategory('Laptops')" data-cat="Laptops">&#x1F4BB; Laptops</button>
+                <button class="tab-btn" onclick="filterByCategory('Gaming')" data-cat="Gaming">&#x1F3AE; Gaming</button>
+                <button class="tab-btn" onclick="filterByCategory('Home Appliances')" data-cat="Home Appliances">&#x1F3E0; Home</button>
+                <button class="tab-btn" onclick="filterByCategory('Fashion')" data-cat="Fashion">Fashion</button>
+                <button class="tab-btn" onclick="filterByCategory('Sports')" data-cat="Sports">Sports</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container" style="padding-top:28px;padding-bottom:60px">
+        <div style="display:grid;grid-template-columns:240px 1fr;gap:24px;align-items:start">
+
+            <!-- FILTER SIDEBAR -->
+            <aside class="filters-sidebar" style="position:sticky;top:80px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                    <h3 style="font-weight:700;font-size:15px;color:var(--text-dark)">Filters</h3>
+                    <button class="btn btn-ghost btn-xs" onclick="resetFilters()" style="font-size:12px;color:var(--text-light)">
+                        Reset All
+                    </button>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-title">Price Range (EGP)</div>
+                    <div style="display:flex;gap:8px;margin-bottom:8px">
+                        <input type="number" id="minPrice" placeholder="Min" min="0" style="font-size:13px;padding:8px 10px">
+                        <input type="number" id="maxPrice" placeholder="Max" min="0" style="font-size:13px;padding:8px 10px">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-title">Sort By</div>
+                    <select id="sortBy" class="sort-select" onchange="applyFilters()" style="width:100%;font-size:13px">
+                        <option value="newest">Newest First</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="popular">Most Popular</option>
+                        <option value="discount">Biggest Discount</option>
+                        <option value="rating">Top Rated</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-title">Rating</div>
+                    <div class="filter-option">
+                        <input type="radio" name="rating" id="rating-any" value="" checked onchange="applyFilters()">
+                        <label for="rating-any" style="font-weight:400;font-size:13px">Any rating</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="rating" id="rating-4" value="4" onchange="applyFilters()">
+                        <label for="rating-4" style="font-weight:400;font-size:13px">&#9733;&#9733;&#9733;&#9733; &amp; up</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="rating" id="rating-3" value="3" onchange="applyFilters()">
+                        <label for="rating-3" style="font-weight:400;font-size:13px">&#9733;&#9733;&#9733; &amp; up</label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-title">Store</div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="store-amazon" value="Amazon" onchange="applyFilters()">
+                        <label for="store-amazon" style="font-weight:400;font-size:13px">Amazon Egypt</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="store-noon" value="Noon" onchange="applyFilters()">
+                        <label for="store-noon" style="font-weight:400;font-size:13px">Noon</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="store-jumia" value="Jumia" onchange="applyFilters()">
+                        <label for="store-jumia" style="font-weight:400;font-size:13px">Jumia</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="store-carrefour" value="Carrefour" onchange="applyFilters()">
+                        <label for="store-carrefour" style="font-weight:400;font-size:13px">Carrefour</label>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary w-full" onclick="applyFilters()">
+                    Apply Filters
+                </button>
+
+                <div style="margin-top:16px;padding:12px;background:rgba(0,212,255,0.08);border-radius:10px;border-left:3px solid var(--primary-color)">
+                    <p style="font-size:12px;color:var(--text-light);line-height:1.5">
+                        &#x1F916; Try <a href="ai-search.html" style="color:var(--primary-color);font-weight:600">AI Search</a> for natural language product discovery
+                    </p>
+                </div>
+            </aside>
+
+            <!-- PRODUCTS AREA -->
+            <main>
+                <!-- TOP BAR -->
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+                    <div style="font-size:14px;color:var(--text-light)">
+                        Found <strong id="productCount" style="color:var(--text-dark)">0</strong> products
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <button class="btn btn-small btn-secondary" id="gridViewBtn" onclick="toggleView('grid')" title="Grid view">
+                            &#x229E; Grid
+                        </button>
+                        <button class="btn btn-small btn-outline" id="listViewBtn" onclick="toggleView('list')" title="List view">
+                            &#x2261; List
+                        </button>
+                    </div>
+                </div>
+
+                <!-- GRID VIEW -->
+                <div id="gridView" class="products-grid"></div>
+
+                <!-- LIST VIEW -->
+                <div id="listView" style="display:none">
+                    <div class="comparison-table-wrap" style="overflow-x:auto">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Best Price</th>
+                                    <th>Stores</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="listViewBody">
+                                <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-light)">No products yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- EMPTY STATE -->
+                <div id="emptyState" style="display:none;text-align:center;padding:60px 20px">
+                    <div style="font-size:64px;margin-bottom:16px">&#x1F50D;</div>
+                    <h3 style="margin-bottom:8px;font-size:20px">No Products Found</h3>
+                    <p style="color:var(--text-light);margin-bottom:20px">Try adjusting your filters or load demo products</p>
+                    <button class="btn btn-primary" onclick="addDemoProducts()">&#x2B; Load Demo Products</button>
+                </div>
+
+                <!-- PAGINATION -->
+                <div id="pagination" class="pagination" style="display:none;margin-top:32px">
+                    <button class="btn btn-small btn-outline" id="prevBtn" onclick="prevPage()">&larr; Prev</button>
+                    <span id="pageInfo" style="align-self:center;font-size:13px;color:var(--text-light)">Page 1</span>
+                    <button class="btn btn-small btn-outline" id="nextBtn" onclick="nextPage()">Next &rarr;</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer style="background:var(--bg-darker);color:rgba(255,255,255,0.5);padding:24px;text-align:center;font-size:13px;border-top:1px solid var(--border-color)">
+        &copy; 2025 Waffar.eg &mdash; Smart Price Comparison for Egypt
+    </footer>
+
+    <script src="assets/app.js"></script>
+    <script>
+        let currentPage = 1;
+        let allProducts = [];
+        let currentView = 'grid';
+        let searchDebounce = null;
+
+        function debouncedSearch() {
+            clearTimeout(searchDebounce);
+            searchDebounce = setTimeout(() => applyFilters(), 400);
+        }
+
+        function filterByCategory(cat) {
+            document.querySelectorAll('#category-tabs .tab-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.cat === cat);
+            });
+            document.getElementById('filterCategory') && (document.getElementById('filterCategory').value = cat);
+            window._activeCategory = cat;
+            currentPage = 1;
+            loadProducts();
+        }
+
+        async function loadProducts() {
+            const grid = document.getElementById('gridView');
+            const list = document.getElementById('listViewBody');
+            const empty = document.getElementById('emptyState');
+
+            grid.innerHTML = Skeleton.grid(8);
+            empty.style.display = 'none';
+
+            const selectedStores = ['store-amazon','store-noon','store-jumia','store-carrefour']
+                .filter(id => document.getElementById(id)?.checked)
+                .map(id => document.getElementById(id).value);
+
+            const ratingEl = document.querySelector('input[name="rating"]:checked');
+
+            try {
+                const filters = {
+                    page: currentPage,
+                    limit: 12,
+                    search: document.getElementById('searchProduct').value,
+                    category: window._activeCategory || '',
+                    minPrice: document.getElementById('minPrice').value,
+                    maxPrice: document.getElementById('maxPrice').value,
+                    sort: document.getElementById('sortBy').value,
+                    minRating: ratingEl ? ratingEl.value : '',
+                    stores: selectedStores.join(',')
+                };
+
+                const result = await getProducts(filters);
+                allProducts = result.data || result.products || [];
+
+                document.getElementById('productCount').textContent = result.pagination?.total || allProducts.length;
+                updatePagination(result.pagination || { page: 1, pages: 1 });
+                displayProducts();
+            } catch (err) {
+                grid.innerHTML = '';
+                empty.style.display = 'block';
+                empty.querySelector('p').textContent = 'Failed to load products. Try adding demo data.';
+            }
+        }
+
+        function displayProducts() {
+            const grid = document.getElementById('gridView');
+            const listBody = document.getElementById('listViewBody');
+            const empty = document.getElementById('emptyState');
+
+            if (!allProducts.length) {
+                grid.innerHTML = '';
+                listBody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-light)">No products found</td></tr>';
+                empty.style.display = 'block';
+                return;
+            }
+
+            empty.style.display = 'none';
+
+            grid.innerHTML = allProducts.map(p => renderProductCard(p)).join('');
+
+            listBody.innerHTML = allProducts.map(p => {
+                const price = p.lowestPrice || p.basePrice || 0;
+                const bestStore = (p.stores || []).find(s => s.price === price)?.store || 'N/A';
+                return `<tr>
+                    <td><strong>${p.name}</strong><br><small style="color:var(--text-light)">${(p.description||'').substring(0,55)}</small></td>
+                    <td><span class="badge badge-primary">${p.category}</span></td>
+                    <td><div class="price-badge cheapest">${UIManager.formatPrice(price)}<br><small>${bestStore}</small></div></td>
+                    <td><span style="font-size:13px;color:var(--text-light)">${(p.stores||[]).length} stores</span></td>
+                    <td style="display:flex;gap:6px">
+                        <button class="btn btn-small btn-primary" onclick="viewProduct('${p._id}')">Compare</button>
+                        <button class="btn btn-small btn-outline" onclick="toggleWishlist(event,'${p._id}')">&#x2665;</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function updatePagination(pagination) {
+            const paginationDiv = document.getElementById('pagination');
+            if (pagination.pages > 1) {
+                paginationDiv.style.display = 'flex';
+                document.getElementById('pageInfo').textContent = `Page ${pagination.page} of ${pagination.pages}`;
+                document.getElementById('prevBtn').disabled = pagination.page <= 1;
+                document.getElementById('nextBtn').disabled = pagination.page >= pagination.pages;
+            } else {
+                paginationDiv.style.display = 'none';
+            }
+        }
+
+        function applyFilters() { currentPage = 1; loadProducts(); }
+
+        function resetFilters() {
+            document.getElementById('searchProduct').value = '';
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            document.getElementById('sortBy').value = 'newest';
+            document.getElementById('rating-any').checked = true;
+            ['store-amazon','store-noon','store-jumia','store-carrefour'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.checked = false;
+            });
+            window._activeCategory = '';
+            document.querySelectorAll('#category-tabs .tab-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === ''));
+            applyFilters();
+        }
+
+        function toggleView(view) {
+            currentView = view;
+            document.getElementById('gridViewBtn').className = `btn btn-small ${view === 'grid' ? 'btn-secondary' : 'btn-outline'}`;
+            document.getElementById('listViewBtn').className = `btn btn-small ${view === 'list' ? 'btn-secondary' : 'btn-outline'}`;
+            document.getElementById('gridView').style.display = view === 'grid' ? 'grid' : 'none';
+            document.getElementById('listView').style.display = view === 'list' ? 'block' : 'none';
+        }
+
+        function nextPage() { currentPage++; loadProducts(); window.scrollTo({top:0,behavior:'smooth'}); }
+        function prevPage() { if (currentPage > 1) { currentPage--; loadProducts(); window.scrollTo({top:0,behavior:'smooth'}); } }
+
+        async function addDemoProducts() {
+            try {
+                showLoader();
+                await addSampleProducts();
+                Toast.success('Sample products loaded!');
+                loadProducts();
+            } catch (err) {
+                Toast.error('Error loading demo: ' + err.message);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // URL param support
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('q')) document.getElementById('searchProduct').value = urlParams.get('q');
+        if (urlParams.get('category')) {
+            window._activeCategory = urlParams.get('category');
+            document.querySelectorAll('#category-tabs .tab-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.cat === window._activeCategory);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateNavigation();
+            if (auth.isAuthenticated()) {
+                const nA = document.getElementById('nav-auth');
+                const uW = document.getElementById('user-menu-wrap');
+                if (nA) nA.style.display = 'none';
+                if (uW) {
+                    uW.style.display = 'block';
+                    const av = document.getElementById('user-avatar');
+                    const nm = document.getElementById('user-name');
+                    if (av) av.textContent = (auth.user?.name||'U')[0].toUpperCase();
+                    if (nm) nm.textContent = (auth.user?.name||'User').split(' ')[0];
+                }
+            }
+            const hb = document.getElementById('hamburger');
+            const mn = document.getElementById('mobile-nav');
+            if (hb && mn) {
+                hb.addEventListener('click', () => { hb.classList.toggle('open'); mn.classList.toggle('open'); });
+            }
+            const userBtn = document.getElementById('user-menu-btn');
+            const userDd = document.getElementById('user-dropdown');
+            if (userBtn && userDd) {
+                userBtn.addEventListener('click', e => { e.stopPropagation(); userDd.style.display = userDd.style.display === 'block' ? 'none' : 'block'; });
+                document.addEventListener('click', () => { userDd.style.display = 'none'; });
+            }
+            loadProducts();
+        });
+    </script>
+</body>
+</html>
