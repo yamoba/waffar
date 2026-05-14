@@ -1,0 +1,12 @@
+{
+  "name": "waffar",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "cd backend && node server.js",
+    "postinstall": "cd backend && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
