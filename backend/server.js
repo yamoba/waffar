@@ -373,7 +373,7 @@ app.get('/api/products', requireDB, async (req, res) => {
         
         if (search) {
             const _reP = new RegExp(search.replace(/[+?^@{}()|[\]]/g, '\$&'), 'i');
-            query = { : [{ name: _reP }, { brand: _reP }, { description: _reP }] };
+            query = { $or: [{ name: _reP }, { brand: _reP }, { description: _reP }] };
         }
         
         if (category && category !== 'all') {
