@@ -18,10 +18,8 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: process.env.FRONTEND_URL || ['http://localhost:3000', 'http://localhost:5000'],
-    credentials: true
-}));
-
+    app.use(cors({ origin: true, credentials: true }));ll responses for speed
+try { const compression = require('compression'); app.use(compression()); } catch(e) {}
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -48,13 +46,27 @@ app.use((req, res, next) => {
     next();
 });
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/waffar')
-.then(async () => { console.log('✓ MongoDB connected'); await seedDemoUser(); })
-.catch(err => {
-    console.error('✗ MongoDB connection error:', err.message);
-    process.exit(1);
-});
+// MongoDB Connection with retry
+let dbConnected = false;
+async function connectDB() {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/waffar', {
+            serverSelectionTimeoutMS: 8000, socketTimeoutMS: 30000
+        });
+        dbConnected = true;
+        console.log('✓ MongoDB connected');
+        await seedDemoUser();
+    } catch (err) {
+        console.error('✗ MongoDB error:', err.message, '— retrying in 5s');
+        setTimeout(connectDB, 5000);
+    }
+}
+connectDB();
+
+function requireDB(req, res, next) {
+    if (!dbConnected) return res.status(503).json({ success: false, message: 'Database connecting, please retry.' });
+    next();
+}
 
 // Seed demo user on startup
 async function seedDemoUser() {
@@ -352,14 +364,15 @@ app.get('/api/wishlist', authMiddleware, async (req, res) => {
 
 // ===== PRODUCT ROUTES =====
 
-app.get('/api/products', async (req, res) => {
+app.get('/api/products', requireDB, async (req, res) => {
     try {
         const { search, category, minPrice, maxPrice, sort = 'newest', limit = 20, page = 1 } = req.query;
         
         let query = {};
         
         if (search) {
-            query = { $text: { $search: search } };
+            const _reP = new RegExp(search.replace(/[+?^@{}()|[\]]/g, '\$&'), 'i');
+            query = { : [{ name: _reP }, { brand: _reP }, { description: _reP }] };
         }
         
         if (category && category !== 'all') {
@@ -406,7 +419,7 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
-app.get('/api/products/deals', async (req, res) => {
+app.get('/api/products/deals', requireDB, async (req, res) => {
     try {
         const limit = Math.min(parseInt(req.query.limit) || 8, 20);
         const products = await Product.find({ discount: { $gt: 0 } })
@@ -417,7 +430,7 @@ app.get('/api/products/deals', async (req, res) => {
     } catch(e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-app.get('/api/products/trending', async (req, res) => {
+app.get('/api/products/trending', requireDB, async (req, res) => {
     try {
         const limit = Math.min(parseInt(req.query.limit) || 6, 20);
         const products = await Product.find({ $or: [{ isTrending: true }, { views: { $gt: 50 } }] })
@@ -428,18 +441,23 @@ app.get('/api/products/trending', async (req, res) => {
     } catch(e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-app.get('/api/products/suggestions', async (req, res) => {
+app.get('/api/products/suggestions', requireDB, async (req, res) => {
     try {
         const q = (req.query.q || '').trim();
         if (!q || q.length < 2) return res.json({ success: true, data: [] });
+        const reSugg = new RegExp(q.replace(/[-[]/{}()*+?.\^$|#]/g, "        const _reSugg = new RegExp(q, 'i');
         const products = await Product.find(
-            { $text: { $search: q } },
+            { $or: [{ name: _reSugg }, { brand: _reSugg }, { category: _reSugg }] },
+            { name: 1, category: 1, lowestPrice: 1, basePrice: 1 }
+        ).limit(6).lean();"), "i");
+        const products = await Product.find(
+            { $or: [{ name: reSugg }, { brand: reSugg }, { category: reSugg }] },
             { name: 1, category: 1, lowestPrice: 1, basePrice: 1 }
         ).limit(6).lean();
         res.json({ success: true, data: products.map(p => ({ _id: p._id, name: p.name, category: p.category, price: p.lowestPrice || p.basePrice })) });
     } catch(e) { res.status(500).json({ success: false, message: e.message }); }
 });
-app.get('/api/products/:id', async (req, res) => {
+app.get('/api/products/:id', requireDB, async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         
@@ -577,7 +595,7 @@ app.delete('/api/comparisons/:id', authMiddleware, async (req, res) => {
 
 // ===== AI SEARCH WITH CLAUDE =====
 
-app.post('/api/ai-search', authMiddleware, async (req, res) => {
+app.post('/api/ai-search', authMiddleware, requireDB, async (req, res) => {
     try {
         const { query } = req.body;
         
@@ -589,19 +607,20 @@ app.post('/api/ai-search', authMiddleware, async (req, res) => {
         }
 
         // Search in database
+        const _reAI = new RegExp(query, 'i');
         const products = await Product.find({
-            $text: { $search: query }
+            $or: [{ name: _reAI }, { brand: _reAI }, { description: _reAI }]
         }).limit(10);
 
         // Try to use Claude API if key exists
         let aiResponse = `Found ${products.length} relevant products for "${query}". `;
         
         try {
-            const claudeKey = req.user.claudeApiKey || process.env.CLAUDE_API_KEY;
+            const claudeKey = process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY || req.user?.claudeApiKey;
             if (claudeKey) {
                 const anthropic = new Anthropic({ apiKey: claudeKey });
                     const response = await anthropic.messages.create({
-                        model: process.env.CLAUDE_MODEL || 'claude-sonnet-4-6',
+                        model: 'claude-haiku-4-5-20251001',
                         max_tokens: 500,
                         messages: [{ role: 'user', content: `User is searching for: "${query}". Products: ${products.map(p => p.name).join(', ')}. Recommend the best match in 2-3 sentences.` }]
                     });
@@ -926,20 +945,7 @@ setTimeout(() => {
     if (mongoose.connection.readyState === 1) scheduleAutoScrape();
     else mongoose.connection.once('connected', scheduleAutoScrape);
 }, 2000);
-// DEBUG — remove after fixing
-app.get('/debug', (req, res) => {
-    const fs = require('fs');
-    const publicPath = path.join(__dirname, 'public');
-    let files = [];
-    try { files = fs.readdirSync(publicPath); } catch(e) { files = ['ERROR: ' + e.message]; }
-    res.json({
-        __dirname,
-        publicPath,
-        publicExists: fs.existsSync(publicPath),
-        files,
-        cwd: process.cwd()
-    });
-});
+
 // ===== HEALTH CHECK =====
 
 app.get('/api/health', (req, res) => {

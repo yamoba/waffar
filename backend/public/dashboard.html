@@ -258,6 +258,36 @@
                 </div>
             </div>
 
+            <!-- Admin / Scraper Tab -->
+            <div id="tab-admin" class="tab-panel">
+                <div class="section-header" style="margin-bottom:1.5rem">
+                    <h2>&#x1F916; Data Scraper</h2>
+                    <p style="color:var(--text-muted)">Fetch real product data from 15 major Egyptian stores</p>
+                </div>
+                <div class="glass-card" style="padding:1.5rem;margin-bottom:1.5rem">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                        <h3 style="margin:0">Scrape Status</h3>
+                        <span id="scrape-badge" class="badge badge-secondary">Idle</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1rem;margin-bottom:1.25rem">
+                        <div class="stat-card"><span class="stat-icon">&#x1F4E6;</span><div class="stat-info"><span class="stat-value" id="stat-found">0</span><span class="stat-label">Found</span></div></div>
+                        <div class="stat-card"><span class="stat-icon">&#x1F4BE;</span><div class="stat-info"><span class="stat-value" id="stat-saved">0</span><span class="stat-label">Saved</span></div></div>
+                        <div class="stat-card"><span class="stat-icon">&#x23F1;</span><div class="stat-info"><span class="stat-value" id="stat-duration">—</span><span class="stat-label">Duration</span></div></div>
+                        <div class="stat-card"><span class="stat-icon">&#x26A0;</span><div class="stat-info"><span class="stat-value" id="stat-errors">0</span><span class="stat-label">Errors</span></div></div>
+                    </div>
+                    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+                        <button class="btn btn-gradient" id="btn-scrape-all" onclick="startScrapeAll()">&#x25B6; Run All Sites</button>
+                        <button class="btn" onclick="refreshScrapeStatus()" style="background:var(--glass-bg);border:1px solid var(--border-color)">&#x1F504; Refresh</button>
+                    </div>
+                </div>
+                <h3 style="margin-bottom:1rem">Sites</h3>
+                <div id="scrape-sites-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem">
+                    <div class="skeleton" style="height:80px;border-radius:12px"></div>
+                    <div class="skeleton" style="height:80px;border-radius:12px"></div>
+                    <div class="skeleton" style="height:80px;border-radius:12px"></div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -436,36 +466,6 @@
             document.getElementById('activity-label').textContent = compCount + ' total';
         }
 
-
-            <!-- Admin / Scraper Tab -->
-            <div id="tab-admin" class="tab-panel" style="display:none">
-                <div class="section-header" style="margin-bottom:1.5rem">
-                    <h2>&#x1F916; Data Scraper</h2>
-                    <p style="color:var(--text-muted)">Fetch real product data from 15 major Egyptian stores</p>
-                </div>
-                <div class="glass-card" style="padding:1.5rem;margin-bottom:1.5rem">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-                        <h3 style="margin:0">Scrape Status</h3>
-                        <span id="scrape-badge" class="badge badge-secondary">Idle</span>
-                    </div>
-                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1rem;margin-bottom:1.25rem">
-                        <div class="stat-card"><span class="stat-icon">&#x1F4E6;</span><div class="stat-info"><span class="stat-value" id="stat-found">0</span><span class="stat-label">Found</span></div></div>
-                        <div class="stat-card"><span class="stat-icon">&#x1F4BE;</span><div class="stat-info"><span class="stat-value" id="stat-saved">0</span><span class="stat-label">Saved</span></div></div>
-                        <div class="stat-card"><span class="stat-icon">&#x23F1;</span><div class="stat-info"><span class="stat-value" id="stat-duration">—</span><span class="stat-label">Duration</span></div></div>
-                        <div class="stat-card"><span class="stat-icon">&#x26A0;</span><div class="stat-info"><span class="stat-value" id="stat-errors">0</span><span class="stat-label">Errors</span></div></div>
-                    </div>
-                    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
-                        <button class="btn btn-gradient" id="btn-scrape-all" onclick="startScrapeAll()">&#x25B6; Run All Sites</button>
-                        <button class="btn" onclick="refreshScrapeStatus()" style="background:var(--glass-bg);border:1px solid var(--border-color)">&#x1F504; Refresh</button>
-                    </div>
-                </div>
-                <h3 style="margin-bottom:1rem">Sites</h3>
-                <div id="scrape-sites-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1rem">
-                    <div class="skeleton" style="height:80px;border-radius:12px"></div>
-                    <div class="skeleton" style="height:80px;border-radius:12px"></div>
-                    <div class="skeleton" style="height:80px;border-radius:12px"></div>
-                </div>
-            </div>
 
         // ===== SCRAPER ADMIN =====
         const SITE_LABELS = {
