@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Search - Waffar.eg</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <nav class="container">
+            <a href="index.html" class="logo">&#x1F4B0; Waffar</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="price_compare.html">Compare</a></li>
+                <li><a href="ai-search.html" style="color:var(--secondary-color)">AI Search</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="theme-toggle">&#x1F319;</button>
+                <div id="nav-auth">
+                    <a href="login.html" class="btn btn-outline btn-small">Login</a>
+                    <a href="signup.html" class="btn btn-primary btn-small">Sign Up</a>
+                </div>
+                <div id="user-menu-wrap" style="display:none;position:relative">
+                    <button id="user-menu-btn">
+                        <span id="user-avatar" style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));display:flex;align-items:center;justify-content:center;color:var(--bg-dark);font-weight:700;font-size:12px">U</span>
+                        <span id="user-name">User</span>
+                    </button>
+                    <div id="user-dropdown">
+                        <button onclick="window.location.href='dashboard.html'">&#x1F4CA; Dashboard</button>
+                        <button onclick="logoutUser()">&#x1F6AA; Logout</button>
+                    </div>
+                </div>
+                <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="mobile-nav" id="mobile-nav">
+        <a href="index.html">Home</a>
+        <a href="price_compare.html">Compare Prices</a>
+        <a href="ai-search.html">AI Search</a>
+        <a href="dashboard.html">Dashboard</a>
+    </div>
+
+    <!-- AI HERO -->
+    <section class="ai-hero">
+        <div class="container" style="position:relative;z-index:1">
+            <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.4);color:var(--secondary-color);padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;margin-bottom:20px">
+                &#x2728; Powered by Claude AI
+            </div>
+            <h1 style="font-size:clamp(2rem,5vw,3rem);font-weight:900;color:white;margin-bottom:16px;line-height:1.1">
+                Search in <span style="background:linear-gradient(135deg,var(--secondary-color),var(--primary-color));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Natural Language</span>
+            </h1>
+            <p style="color:rgba(255,255,255,0.65);font-size:16px;margin-bottom:28px;max-width:560px;margin-left:auto;margin-right:auto">
+                Describe what you're looking for in plain Arabic or English. Our AI understands context, budget, and preferences.
+            </p>
+
+            <!-- SEARCH INPUT -->
+            <div class="ai-search-input-wrapper">
+                <textarea id="ai-query" class="ai-search-input" rows="1"
+                    placeholder="e.g. 'A good phone under 10,000 EGP with a great camera' or 'laptop for student with long battery'"
+                    onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIQuery()}"
+                    oninput="autoResize(this)"></textarea>
+                <button class="ai-send-btn" onclick="sendAIQuery()" title="Search">&#x27A4;</button>
+            </div>
+
+            <!-- SUGGESTIONS -->
+            <div class="ai-suggestions" id="suggestion-chips">
+                <button class="ai-suggestion-chip" onclick="fillQuery(this.textContent)">iPhone under 15000 EGP</button>
+                <button class="ai-suggestion-chip" onclick="fillQuery(this.textContent)">Best laptop for students</button>
+                <button class="ai-suggestion-chip" onclick="fillQuery(this.textContent)">Wireless headphones with noise cancellation</button>
+                <button class="ai-suggestion-chip" onclick="fillQuery(this.textContent)">Smart TV 55 inch best price</button>
+                <button class="ai-suggestion-chip" onclick="fillQuery(this.textContent)">Gaming setup under 20000 EGP</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CHAT + HISTORY AREA -->
+    <div class="container" style="padding:32px 20px 60px;max-width:900px">
+
+        <!-- AUTH GATE -->
+        <div id="auth-gate" style="display:none;text-align:center;padding:48px 20px">
+            <div style="font-size:56px;margin-bottom:16px">&#x1F916;</div>
+            <h3 style="font-size:22px;margin-bottom:10px;color:var(--text-dark)">Login to use AI Search</h3>
+            <p style="color:var(--text-light);margin-bottom:24px">Create a free account to access our Claude AI-powered product search</p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+                <a href="login.html" class="btn btn-primary">Login</a>
+                <a href="signup.html" class="btn btn-outline">Create Account</a>
+            </div>
+        </div>
+
+        <!-- CHAT CONTAINER -->
+        <div id="chat-container" class="chat-container"></div>
+
+        <!-- HISTORY SECTION -->
+        <div id="history-section" style="margin-top:40px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                <h3 style="font-size:16px;font-weight:700;color:var(--text-dark)">&#x1F4CB; Recent Searches</h3>
+                <button class="btn btn-ghost btn-small" onclick="clearHistory()" style="font-size:12px;color:var(--text-light)">Clear All</button>
+            </div>
+            <div id="history-list">
+                <p style="color:var(--text-lighter);font-size:14px;text-align:center;padding:20px">No search history yet. Try asking the AI something!</p>
+            </div>
+        </div>
+    </div>
+
+    <footer style="background:var(--bg-darker);color:rgba(255,255,255,0.5);padding:24px;text-align:center;font-size:13px;border-top:1px solid var(--border-color)">
+        &copy; 2025 Waffar.eg &mdash; AI Search powered by Claude
+    </footer>
+
+    <script src="assets/app.js"></script>
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+
+        function autoResize(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 200) + 'px';
+        }
+
+        function fillQuery(text) {
+            const input = document.getElementById('ai-query');
+            input.value = text;
+            autoResize(input);
+            input.focus();
+        }
+
+        function appendMessage(role, content, products = []) {
+            const isUser = role === 'user';
+            const div = document.createElement('div');
+            div.className = `chat-message ${isUser ? 'user' : 'ai'}`;
+
+            const avatarHtml = isUser
+                ? `<div class="chat-avatar user-av">${(auth.user?.name||'U')[0].toUpperCase()}</div>`
+                : `<div class="chat-avatar ai">&#x1F916;</div>`;
+
+            let productsHtml = '';
+            if (products && products.length > 0) {
+                productsHtml = `<div class="ai-result-products">${products.slice(0,6).map(p => `
+                    <div class="ai-result-product" onclick="viewProduct('${p._id}')">
+                        <div style="font-size:28px;text-align:center;margin-bottom:8px">${getCategoryEmoji(p.category)}</div>
+                        <div class="ai-result-product-name">${p.name}</div>
+                        <div class="ai-result-product-price">${UIManager.formatPrice(p.lowestPrice||p.basePrice||0)}</div>
+                        <div style="font-size:11px;color:var(--text-lighter);margin-top:4px">${(p.stores||[]).length} stores</div>
+                    </div>`).join('')}
+                </div>`;
+            }
+
+            div.innerHTML = `
+                ${avatarHtml}
+                <div class="chat-bubble">${content}${productsHtml}</div>`;
+
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return div;
+        }
+
+        function showTypingIndicator() {
+            const div = document.createElement('div');
+            div.className = 'chat-message ai';
+            div.id = 'typing-indicator';
+            div.innerHTML = `
+                <div class="chat-avatar ai">&#x1F916;</div>
+                <div class="chat-bubble">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>`;
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        async function sendAIQuery() {
+            if (!auth.isAuthenticated()) {
+                Toast.warning('Please login to use AI Search');
+                return;
+            }
+
+            const input = document.getElementById('ai-query');
+            const query = input.value.trim();
+            if (!query) { Toast.warning('Please enter a search query'); return; }
+
+            input.value = '';
+            input.style.height = 'auto';
+
+            appendMessage('user', query);
+            showTypingIndicator();
+
+            try {
+                const result = await aiSearch(query);
+                document.getElementById('typing-indicator')?.remove();
+
+                if (result && result.success) {
+                    const aiMessage = result.data?.aiResponse || result.aiResponse || 'Here are some products I found for you:';
+                    const products = result.data?.products || result.products || [];
+                    appendMessage('ai', aiMessage, products);
+                    loadHistory();
+                } else {
+                    appendMessage('ai', 'Sorry, I could not process your search. Please try again.');
+                }
+            } catch (err) {
+                document.getElementById('typing-indicator')?.remove();
+                appendMessage('ai', `I encountered an error: ${err.message}. Please check your connection and try again.`);
+            }
+        }
+
+        async function loadHistory() {
+            const listEl = document.getElementById('history-list');
+            try {
+                const result = await getAISearchHistory();
+                const history = result.data || [];
+                if (!history.length) {
+                    listEl.innerHTML = '<p style="color:var(--text-lighter);font-size:14px;text-align:center;padding:20px">No search history yet.</p>';
+                    return;
+                }
+                listEl.innerHTML = history.slice(0, 8).map(h => `
+                    <div class="card" style="padding:14px 16px;margin-bottom:10px;cursor:pointer;border-left:3px solid var(--secondary-color)"
+                         onclick="fillQuery('${h.query.replace(/'/g, "&#39;")}')">
+                        <div style="display:flex;justify-content:space-between;align-items:start;gap:12px">
+                            <div>
+                                <div style="font-weight:600;font-size:14px;color:var(--text-dark);margin-bottom:4px">&#x1F50D; ${h.query}</div>
+                                <div style="font-size:12px;color:var(--text-lighter)">${new Date(h.createdAt).toLocaleDateString()}</div>
+                            </div>
+                            <span class="badge badge-secondary">${(h.results||[]).length} results</span>
+                        </div>
+                    </div>`).join('');
+            } catch(e) {
+                listEl.innerHTML = '';
+            }
+        }
+
+        function clearHistory() {
+            document.getElementById('history-list').innerHTML = '<p style="color:var(--text-lighter);font-size:14px;text-align:center;padding:20px">History cleared.</p>';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateNavigation();
+
+            if (auth.isAuthenticated()) {
+                document.getElementById('auth-gate').style.display = 'none';
+                const nA = document.getElementById('nav-auth');
+                const uW = document.getElementById('user-menu-wrap');
+                if (nA) nA.style.display = 'none';
+                if (uW) {
+                    uW.style.display = 'block';
+                    const av = document.getElementById('user-avatar');
+                    const nm = document.getElementById('user-name');
+                    if (av) av.textContent = (auth.user?.name||'U')[0].toUpperCase();
+                    if (nm) nm.textContent = (auth.user?.name||'User').split(' ')[0];
+                }
+                loadHistory();
+                appendMessage('ai', `Hello ${auth.user?.name?.split(' ')[0] || 'there'}! &#x1F44B; I\'m your AI shopping assistant. Ask me anything — like "best phone under 8000 EGP" or "gaming laptop with good GPU". I\'ll find the best options for you!`);
+            } else {
+                document.getElementById('auth-gate').style.display = 'block';
+                document.getElementById('history-section').style.display = 'none';
+            }
+
+            const hb = document.getElementById('hamburger');
+            const mn = document.getElementById('mobile-nav');
+            if (hb && mn) hb.addEventListener('click', () => { hb.classList.toggle('open'); mn.classList.toggle('open'); });
+
+            const userBtn = document.getElementById('user-menu-btn');
+            const userDd = document.getElementById('user-dropdown');
+            if (userBtn && userDd) {
+                userBtn.addEventListener('click', e => { e.stopPropagation(); userDd.style.display = userDd.style.display === 'block' ? 'none' : 'block'; });
+                document.addEventListener('click', () => { userDd.style.display = 'none'; });
+            }
+        });
+    </script>
+</body>
+</html>
