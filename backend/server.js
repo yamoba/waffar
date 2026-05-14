@@ -953,6 +953,13 @@ app.get('/api/health', (req, res) => {
 
 // ===== ERROR HANDLING =====
 
+// ===== SERVE FRONTEND =====
+const FRONTEND = path.join(__dirname, 'public');
+app.use(express.static(FRONTEND));
+app.get('*', (req, res) => {
+    res.sendFile(path.join(FRONTEND, 'index.html'));
+});
+
 app.use((req, res) => {
     res.status(404).json({ success: false, message: 'Route not found', path: req.path });
 });
@@ -962,15 +969,7 @@ app.use((err, req, res, next) => {
     res.status(err.status || 500).json({ success: false, message: err.message || 'Server error' });
 });
 
-// ===== SERVE FRONTEND (production) =====
-const path = require('path');
-// Serve frontend from backend/public/
-const FRONTEND = path.join(__dirname, 'public');
-app.use(express.static(FRONTEND));
-app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(FRONTEND, 'index.html'));
-});
+
 
 // ===== START SERVER =====
 
