@@ -58,6 +58,17 @@
 
     <!-- HERO -->
     <section class="hero-modern">
+        <!-- Floating particles -->
+        <div class="hero-particle" style="--x:15%;--y:20%;--size:8px;--delay:0s;--dur:7s"></div>
+        <div class="hero-particle" style="--x:80%;--y:15%;--size:12px;--delay:1.2s;--dur:9s"></div>
+        <div class="hero-particle" style="--x:65%;--y:70%;--size:6px;--delay:0.5s;--dur:6s"></div>
+        <div class="hero-particle" style="--x:25%;--y:75%;--size:10px;--delay:2s;--dur:8s"></div>
+        <div class="hero-particle" style="--x:90%;--y:45%;--size:7px;--delay:0.8s;--dur:10s"></div>
+        <div class="hero-particle" style="--x:40%;--y:85%;--size:9px;--delay:1.7s;--dur:7.5s"></div>
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+        <div class="hero-orb hero-orb-3"></div>
+
         <div class="container">
             <div class="hero-eyebrow" data-reveal>
                 <span>&#x2728;</span> Egypt's #1 Price Comparison Platform
@@ -75,11 +86,11 @@
             <div class="hero-search-bar" data-reveal data-delay="250">
                 <input type="text" id="hero-search" placeholder="Search for iPhone 15, Samsung TV, Nike shoes..."
                     onkeydown="if(event.key==='Enter') heroSearch()">
-                <button class="hero-search-btn" onclick="heroSearch()">Search &#x1F50D;</button>
+                <button class="hero-search-btn pulse-glow" onclick="heroSearch()">Search &#x1F50D;</button>
             </div>
 
             <div class="hero-cta" data-reveal data-delay="300">
-                <a href="price_compare.html" class="btn btn-primary btn-large">&#x1F4CB; Browse Products</a>
+                <a href="price_compare.html" class="btn btn-primary btn-large hero-cta-primary">&#x1F4CB; Browse Products</a>
                 <a href="ai-search.html" class="btn btn-outline btn-large" style="border-color:rgba(255,255,255,0.4);color:white">
                     &#x1F916; Try AI Search
                 </a>
@@ -105,6 +116,40 @@
             </div>
         </div>
     </section>
+
+    <!-- TRUSTED STORES MARQUEE -->
+    <div class="stores-strip">
+        <div class="stores-strip-label">Prices from</div>
+        <div class="stores-marquee-wrap">
+            <div class="stores-marquee">
+                <span class="store-pill">&#x1F6CD; Amazon.eg</span>
+                <span class="store-pill">&#x1F6D2; Jumia</span>
+                <span class="store-pill">&#x2600;&#xFE0F; Noon</span>
+                <span class="store-pill">&#x1F3EA; Carrefour</span>
+                <span class="store-pill">&#x26A1; Extra</span>
+                <span class="store-pill">&#x1F4FA; B.Tech</span>
+                <span class="store-pill">&#x1F3E0; Homzmart</span>
+                <span class="store-pill">&#x1F4BB; 2B</span>
+                <span class="store-pill">&#x1F4E1; Radio Shack</span>
+                <span class="store-pill">&#x1F6C6; Raneen</span>
+                <span class="store-pill">&#x1FA91; IKEA</span>
+                <span class="store-pill">&#x1F455; Namshi</span>
+                <!-- duplicate for seamless loop -->
+                <span class="store-pill">&#x1F6CD; Amazon.eg</span>
+                <span class="store-pill">&#x1F6D2; Jumia</span>
+                <span class="store-pill">&#x2600;&#xFE0F; Noon</span>
+                <span class="store-pill">&#x1F3EA; Carrefour</span>
+                <span class="store-pill">&#x26A1; Extra</span>
+                <span class="store-pill">&#x1F4FA; B.Tech</span>
+                <span class="store-pill">&#x1F3E0; Homzmart</span>
+                <span class="store-pill">&#x1F4BB; 2B</span>
+                <span class="store-pill">&#x1F4E1; Radio Shack</span>
+                <span class="store-pill">&#x1F6C6; Raneen</span>
+                <span class="store-pill">&#x1FA91; IKEA</span>
+                <span class="store-pill">&#x1F455; Namshi</span>
+            </div>
+        </div>
+    </div>
 
     <!-- FEATURES SECTION -->
     <section class="section" style="padding:80px 20px">
@@ -149,18 +194,95 @@
         </div>
     </section>
 
+    <!-- HOW IT WORKS -->
+    <section class="section how-it-works-section" style="padding:80px 20px;background:linear-gradient(135deg,rgba(0,212,255,0.03),rgba(99,102,241,0.06))">
+        <div class="container">
+            <div style="text-align:center;margin-bottom:56px">
+                <h2 class="section-title" data-reveal>How <span class="gradient-text">Waffar</span> Works</h2>
+                <p class="section-subtitle" style="margin:0 auto" data-reveal data-delay="100">Three simple steps to smarter shopping</p>
+            </div>
+            <div class="how-it-works-grid">
+                <div class="hiw-step" data-reveal data-delay="100">
+                    <div class="hiw-step-number">01</div>
+                    <div class="hiw-icon-wrap">&#x1F50D;</div>
+                    <h3 class="hiw-title">Search a Product</h3>
+                    <p class="hiw-desc">Type any product name or describe it in natural language. Our engine searches across 15+ Egyptian stores in seconds.</p>
+                </div>
+                <div class="hiw-connector" aria-hidden="true">
+                    <div class="hiw-connector-line"></div>
+                    <div class="hiw-connector-arrow">&#x276F;</div>
+                </div>
+                <div class="hiw-step" data-reveal data-delay="250">
+                    <div class="hiw-step-number">02</div>
+                    <div class="hiw-icon-wrap">&#x1F4CA;</div>
+                    <h3 class="hiw-title">Compare Prices</h3>
+                    <p class="hiw-desc">See live prices from all stores side-by-side with full price history charts. Know exactly when to buy.</p>
+                </div>
+                <div class="hiw-connector" aria-hidden="true">
+                    <div class="hiw-connector-line"></div>
+                    <div class="hiw-connector-arrow">&#x276F;</div>
+                </div>
+                <div class="hiw-step" data-reveal data-delay="400">
+                    <div class="hiw-step-number">03</div>
+                    <div class="hiw-icon-wrap">&#x1F4B0;</div>
+                    <h3 class="hiw-title">Save Money</h3>
+                    <p class="hiw-desc">Buy at the lowest price or set a price-drop alert. Our users save an average of 35% on every purchase.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRENDING SECTION -->
+    <section class="section" style="background:linear-gradient(135deg,rgba(251,146,60,0.04),rgba(217,119,6,0.04));padding:80px 20px">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;flex-wrap:wrap;gap:16px">
+                <div>
+                    <h2 class="section-title" style="margin-bottom:8px" data-reveal>🔥 Trending Now</h2>
+                    <p style="color:var(--text-light);font-size:14px" data-reveal>Most viewed and loved products</p>
+                </div>
+                <a href="price_compare.html?sort=trending" class="btn btn-outline btn-small" data-reveal>View All →</a>
+            </div>
+            <div class="products-grid" id="trending-grid">
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+            </div>
+        </div>
+    </section>
+
     <!-- DEALS SECTION -->
     <section class="section" style="background:linear-gradient(135deg,rgba(0,212,255,0.04),rgba(99,102,241,0.04));padding:80px 20px">
         <div class="container">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;flex-wrap:wrap;gap:16px">
                 <div>
-                    <h2 class="section-title" style="margin-bottom:8px" data-reveal>&#x1F525; Hot Deals Today</h2>
-                    <p style="color:var(--text-light);font-size:14px" data-reveal>Prices updated in real-time</p>
+                    <h2 class="section-title" style="margin-bottom:8px" data-reveal>💰 Best Deals</h2>
+                    <p style="color:var(--text-light);font-size:14px" data-reveal>Heavy discounts across all categories</p>
                 </div>
-                <a href="price_compare.html" class="btn btn-outline btn-small" data-reveal>View All Deals &rarr;</a>
+                <a href="price_compare.html?sort=discount" class="btn btn-outline btn-small" data-reveal>View All Deals →</a>
             </div>
             <div class="products-grid" id="deals-grid">
-                <!-- Skeleton placeholders -->
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURED SECTION -->
+    <section class="section" style="background:linear-gradient(135deg,rgba(168,85,247,0.04),rgba(236,72,153,0.04));padding:80px 20px">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;flex-wrap:wrap;gap:16px">
+                <div>
+                    <h2 class="section-title" style="margin-bottom:8px" data-reveal>⭐ Featured Products</h2>
+                    <p style="color:var(--text-light);font-size:14px" data-reveal>Highly rated and recommended</p>
+                </div>
+                <a href="price_compare.html?sort=rating" class="btn btn-outline btn-small" data-reveal>See More →</a>
+            </div>
+            <div class="products-grid" id="featured-grid">
                 <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
                 <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
                 <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-card-body"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text w-75"></div><div class="skeleton skeleton-text w-50"></div></div></div>
@@ -177,37 +299,37 @@
                 <p class="section-subtitle" style="margin:0 auto" data-reveal>Find deals in your favorite categories</p>
             </div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px">
-                <a href="price_compare.html?category=Electronics" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="100">
-                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F4BB;</div>
-                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Electronics</div>
+                <a href="price_compare.html?category=Electronics" class="category-card" data-reveal data-delay="100">
+                    <div class="category-icon">&#x1F4BB;</div>
+                    <div class="category-label">Electronics</div>
                 </a>
-                <a href="price_compare.html?category=Phones" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="150">
-                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F4F1;</div>
-                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Phones</div>
+                <a href="price_compare.html?category=Phones" class="category-card" data-reveal data-delay="150">
+                    <div class="category-icon">&#x1F4F1;</div>
+                    <div class="category-label">Phones</div>
                 </a>
-                <a href="price_compare.html?category=Home+Appliances" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="200">
-                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F3E0;</div>
-                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Home</div>
+                <a href="price_compare.html?category=Home+Appliances" class="category-card" data-reveal data-delay="200">
+                    <div class="category-icon">&#x1F3E0;</div>
+                    <div class="category-label">Home</div>
                 </a>
-                <a href="price_compare.html?category=Fashion" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="250">
-                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F457;</div>
-                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Fashion</div>
+                <a href="price_compare.html?category=Fashion" class="category-card" data-reveal data-delay="250">
+                    <div class="category-icon">&#x1F457;</div>
+                    <div class="category-label">Fashion</div>
                 </a>
-                <a href="price_compare.html?category=Gaming" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="300">
-                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F3AE;</div>
-                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Gaming</div>
+                <a href="price_compare.html?category=Gaming" class="category-card" data-reveal data-delay="300">
+                    <div class="category-icon">&#x1F3AE;</div>
+                    <div class="category-label">Gaming</div>
                 </a>
-                <a href="price_compare.html?category=Sports" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="350">
-                    <div style="font-size:2.5rem;margin-bottom:10px">&#x26BD;</div>
-                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Sports</div>
+                <a href="price_compare.html?category=Sports" class="category-card" data-reveal data-delay="350">
+                    <div class="category-icon">&#x26BD;</div>
+                    <div class="category-label">Sports</div>
                 </a>
-                <a href="price_compare.html?category=Beauty" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="400">
-                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F484;</div>
-                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Beauty</div>
+                <a href="price_compare.html?category=Beauty" class="category-card" data-reveal data-delay="400">
+                    <div class="category-icon">&#x1F484;</div>
+                    <div class="category-label">Beauty</div>
                 </a>
-                <a href="price_compare.html?category=Books" class="card" style="text-align:center;text-decoration:none;padding:24px 12px" data-reveal data-delay="450">
-                    <div style="font-size:2.5rem;margin-bottom:10px">&#x1F4DA;</div>
-                    <div style="font-weight:700;font-size:13px;color:var(--text-dark)">Books</div>
+                <a href="price_compare.html?category=Books" class="category-card" data-reveal data-delay="450">
+                    <div class="category-icon">&#x1F4DA;</div>
+                    <div class="category-label">Books</div>
                 </a>
             </div>
         </div>
@@ -343,8 +465,8 @@
         async function loadDeals() {
             const grid = document.getElementById('deals-grid');
             try {
-                const result = await getProducts({ limit: 8, sort: 'discount' });
-                const products = result.data || result.products || [];
+                const result = await getDeals(8);
+                const products = result.data || [];
                 if (!products.length) {
                     grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">No deals available right now. <a href="price_compare.html">Browse all products</a></p>';
                     return;
@@ -352,6 +474,36 @@
                 grid.innerHTML = products.map(p => renderProductCard(p)).join('');
             } catch(e) {
                 grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">Unable to load deals. <a href="price_compare.html">Browse manually &rarr;</a></p>';
+            }
+        }
+
+        async function loadTrending() {
+            const grid = document.getElementById('trending-grid');
+            try {
+                const result = await getTrending(6);
+                const products = result.data || [];
+                if (!products.length) {
+                    grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">No trending products. <a href="price_compare.html">Browse products</a></p>';
+                    return;
+                }
+                grid.innerHTML = products.map(p => renderProductCard(p)).join('');
+            } catch(e) {
+                grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">Unable to load trending. <a href="price_compare.html">Browse manually &rarr;</a></p>';
+            }
+        }
+
+        async function loadFeatured() {
+            const grid = document.getElementById('featured-grid');
+            try {
+                const result = await getFeatured(8);
+                const products = result.data || [];
+                if (!products.length) {
+                    grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">Featured products coming soon. <a href="price_compare.html">Browse all</a></p>';
+                    return;
+                }
+                grid.innerHTML = products.map(p => renderProductCard(p)).join('');
+            } catch(e) {
+                grid.innerHTML = '<p style="color:var(--text-light);padding:20px;grid-column:1/-1">Unable to load featured. <a href="price_compare.html">Browse manually &rarr;</a></p>';
             }
         }
 
@@ -393,7 +545,9 @@
                 });
             }
 
+            loadTrending();
             loadDeals();
+            loadFeatured();
         });
     </script>
 </body>

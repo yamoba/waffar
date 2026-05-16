@@ -2949,3 +2949,419 @@ header.scrolled {
 .relative { position: relative; }
 .absolute { position: absolute; }
 .z-10 { z-index: 10; }
+
+/* ========================================================
+   HOMEPAGE ANIMATION ENHANCEMENTS
+   ======================================================== */
+
+/* ---- Hero Floating Particles ---- */
+
+@keyframes particleFloat {
+    0%, 100% { transform: translateY(0px) translateX(0px) scale(1); opacity: 0.6; }
+    33%       { transform: translateY(-22px) translateX(8px) scale(1.1); opacity: 0.9; }
+    66%       { transform: translateY(10px) translateX(-12px) scale(0.95); opacity: 0.5; }
+}
+
+.hero-particle {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,212,255,0.8), rgba(99,102,241,0.4));
+    animation: particleFloat var(--dur, 8s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+    pointer-events: none;
+    z-index: 0;
+    box-shadow: 0 0 6px rgba(0,212,255,0.5);
+}
+
+/* ---- Hero Decorative Orbs ---- */
+
+@keyframes orbDrift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%       { transform: translate(40px, -30px) scale(1.08); }
+}
+
+.hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(60px);
+}
+
+.hero-orb-1 {
+    width: 300px; height: 300px;
+    top: -80px; left: -60px;
+    background: radial-gradient(circle, rgba(0,212,255,0.18), transparent 70%);
+    animation: orbDrift 14s ease-in-out infinite;
+}
+
+.hero-orb-2 {
+    width: 250px; height: 250px;
+    bottom: -60px; right: -40px;
+    background: radial-gradient(circle, rgba(99,102,241,0.2), transparent 70%);
+    animation: orbDrift 11s ease-in-out infinite reverse;
+}
+
+.hero-orb-3 {
+    width: 180px; height: 180px;
+    top: 40%; left: 55%;
+    background: radial-gradient(circle, rgba(255,107,53,0.12), transparent 70%);
+    animation: orbDrift 17s ease-in-out infinite 3s;
+}
+
+/* ---- Hero CTA primary button shimmer ---- */
+
+.hero-cta-primary {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-cta-primary::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -80%;
+    width: 60%; height: 200%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
+    transform: skewX(-20deg);
+    animation: btnShimmer 3s ease-in-out infinite;
+}
+
+@keyframes btnShimmer {
+    0%   { left: -80%; }
+    50%, 100% { left: 150%; }
+}
+
+/* ---- Trusted Stores Marquee ---- */
+
+.stores-strip {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 20px;
+    background: var(--bg-lighter);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.stores-strip-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-lighter);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.stores-marquee-wrap {
+    flex: 1;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+@keyframes marqueeScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+.stores-marquee {
+    display: flex;
+    gap: 12px;
+    width: max-content;
+    animation: marqueeScroll 28s linear infinite;
+}
+
+.stores-marquee:hover { animation-play-state: paused; }
+
+.store-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+    white-space: nowrap;
+    transition: border-color 0.2s, color 0.2s;
+    cursor: default;
+}
+
+.store-pill:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+[data-theme="dark"] .store-pill {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.1);
+}
+
+/* ---- How It Works Section ---- */
+
+.how-it-works-grid {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    justify-content: center;
+}
+
+.hiw-step {
+    background: var(--bg-lighter);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 40px 32px;
+    text-align: center;
+    flex: 1;
+    max-width: 280px;
+    position: relative;
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.hiw-step::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(0,212,255,0.04), rgba(99,102,241,0.04));
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.hiw-step:hover::before { opacity: 1; }
+
+.hiw-step:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: rgba(0,212,255,0.4);
+}
+
+.hiw-step-number {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--primary-color);
+    opacity: 0.08;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.hiw-icon-wrap {
+    width: 80px;
+    height: 80px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(99,102,241,0.15));
+    border: 1px solid rgba(0,212,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin: 0 auto 20px;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s;
+}
+
+.hiw-step:hover .hiw-icon-wrap {
+    transform: scale(1.12) rotate(-4deg);
+    box-shadow: 0 8px 24px rgba(0,212,255,0.3);
+}
+
+.hiw-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.hiw-desc {
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.7;
+}
+
+.hiw-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 12px;
+    flex-shrink: 0;
+    gap: 4px;
+    color: var(--primary-color);
+    opacity: 0.5;
+}
+
+.hiw-connector-line {
+    height: 2px;
+    width: 40px;
+    background: linear-gradient(90deg, rgba(0,212,255,0.3), rgba(99,102,241,0.3));
+    border-radius: 1px;
+}
+
+.hiw-connector-arrow {
+    font-size: 20px;
+    line-height: 1;
+}
+
+@media (max-width: 768px) {
+    .how-it-works-grid {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .hiw-step { max-width: 100%; width: 100%; }
+
+    .hiw-connector {
+        flex-direction: row;
+        transform: rotate(90deg);
+        padding: 0;
+    }
+}
+
+/* ---- Category Cards ---- */
+
+.category-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-decoration: none;
+    padding: 28px 12px;
+    background: var(--bg-lighter);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.category-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 0;
+}
+
+.category-card:hover::after { opacity: 0.07; }
+
+.category-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(0,212,255,0.45);
+}
+
+.category-icon {
+    font-size: 2.6rem;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+    display: block;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.category-card:hover .category-icon {
+    transform: scale(1.22) translateY(-4px);
+}
+
+.category-label {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-dark);
+    position: relative;
+    z-index: 1;
+    transition: color 0.2s;
+}
+
+.category-card:hover .category-label {
+    color: var(--primary-color);
+}
+
+/* ---- Hero stat number glow on animate ---- */
+
+.hero-stat-number span {
+    display: inline-block;
+    position: relative;
+}
+
+/* ---- Testimonial card enhanced hover ---- */
+
+.testimonial-card:hover {
+    border-color: rgba(0,212,255,0.35);
+    box-shadow: 0 12px 40px rgba(0,212,255,0.1), var(--shadow-lg);
+}
+
+/* ---- Product card entrance stagger (when rendered dynamically) ---- */
+
+.products-grid .product-card {
+    animation: fadeInUp 0.5s ease both;
+}
+
+.products-grid .product-card:nth-child(1) { animation-delay: 0.05s; }
+.products-grid .product-card:nth-child(2) { animation-delay: 0.10s; }
+.products-grid .product-card:nth-child(3) { animation-delay: 0.15s; }
+.products-grid .product-card:nth-child(4) { animation-delay: 0.20s; }
+.products-grid .product-card:nth-child(5) { animation-delay: 0.25s; }
+.products-grid .product-card:nth-child(6) { animation-delay: 0.30s; }
+.products-grid .product-card:nth-child(7) { animation-delay: 0.35s; }
+.products-grid .product-card:nth-child(8) { animation-delay: 0.40s; }
+
+/* ---- Section title animated underline ---- */
+
+.section-title-anim {
+    display: inline-block;
+    position: relative;
+}
+
+.section-title-anim::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    transition: width 0.6s ease;
+}
+
+.section-title-anim.revealed::after { width: 100%; }
+
+/* ---- Dark mode adjustments for new elements ---- */
+
+[data-theme="dark"] .hiw-step {
+    background: #161b22;
+    border-color: #30363d;
+}
+
+[data-theme="dark"] .category-card {
+    background: #161b22;
+    border-color: #30363d;
+}
+
+[data-theme="dark"] .stores-strip {
+    background: #161b22;
+    border-color: #30363d;
+}
+
+/* ---- Responsive: stores strip ---- */
+
+@media (max-width: 480px) {
+    .stores-strip-label { display: none; }
+    .hiw-step { padding: 28px 20px; }
+    .hiw-icon-wrap { width: 64px; height: 64px; font-size: 28px; }
+}
