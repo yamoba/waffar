@@ -10,8 +10,6 @@ export async function setJson(key: string, value: unknown, ttlSeconds: number) {
 }
 
 export async function invalidateByPrefix(prefix: string) {
-  const stream = redis.scanStream({ match: `${prefix}*`, count: 100 });
-  const keys: string[] = [];
-  for await (const batch of stream) keys.push(...batch as string[]);
+  const keys = await redis.keys(`${prefix}*`);
   if (keys.length) await redis.del(...keys);
 }
