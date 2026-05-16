@@ -6,6 +6,15 @@ const npxCmd = isWindows ? "npx.cmd" : "npx";
 const frontendPort = process.env.PORT || "3000";
 const backendPort = process.env.BACKEND_PORT || "4000";
 
+const requiredEnv = ["DATABASE_URL", "JWT_SECRET", "JWT_REFRESH_SECRET"];
+const missingEnv = requiredEnv.filter((key) => !process.env[key]);
+
+if (missingEnv.length) {
+  console.error(`Missing required environment variables: ${missingEnv.join(", ")}`);
+  console.error("Add them in Railway Variables, then redeploy. DATABASE_URL must point to a PostgreSQL database.");
+  process.exit(1);
+}
+
 function run(command, args, options = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
@@ -36,11 +45,7 @@ function start(name, command, args, options = {}) {
   return child;
 }
 
-if (process.env.DATABASE_URL) {
-  await run(npxCmd, ["prisma", "db", "push", "--skip-generate"], { cwd: "backend" });
-} else {
-  console.warn("DATABASE_URL is not set; skipping Prisma db push.");
-}
+await run(npxCmd, ["prisma", "db", "push", "--skip-generate"], { cwd: "backend" });
 
 start("backend", "node", ["dist/server.js"], {
   cwd: "backend",
