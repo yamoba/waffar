@@ -31,7 +31,7 @@ class JumiaScraper(BaseScraper):
                 if link and not link.startswith("http"):
                     link = f"https://www.jumia.com.eg{link}"
 
-                sku = card.get_attribute("data-sku") or (link.el.split("-")[-1].split(".")[0] if link else None)
+                sku = card.get_attribute("data-sku") or (link.rsplit("-", 1)[-1].split(".")[0] if link else None)
 
                 price_el = card.query_selector(selectors.get("price", ".prc"))
                 price = None

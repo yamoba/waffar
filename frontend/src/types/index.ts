@@ -41,6 +41,10 @@ export interface Listing {
   rating?: number;
   reviewCount?: number;
   priceHistory?: PricePoint[];
+  lastVerifiedAt?: string;
+  lastScrapedAt?: string;
+  priceConfidence?: number;
+  verificationStatus?: "UNVERIFIED" | "VERIFIED" | "STALE" | "SUSPICIOUS" | "DEAD";
 }
 
 export interface Store {

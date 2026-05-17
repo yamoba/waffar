@@ -20,6 +20,8 @@ app.conf.update(
         "src.tasks.scrape_product": {"queue": "scraper"},
         "src.tasks.update_aggregates": {"queue": "maintenance"},
         "src.tasks.check_alerts": {"queue": "maintenance"},
+        "src.tasks.verify_listings_health": {"queue": "maintenance"},
+        "src.tasks.refresh_stale_listings": {"queue": "maintenance"},
     },
 )
 
@@ -46,6 +48,14 @@ app.conf.beat_schedule = {
     "check-alerts": {
         "task": "src.tasks.check_alerts",
         "schedule": 300.0,  # 5 minutes
+    },
+    "verify-listings-health": {
+        "task": "src.tasks.verify_listings_health",
+        "schedule": 600.0,  # every 10 min: rolling URL health pass over ~50 listings
+    },
+    "refresh-stale-listings": {
+        "task": "src.tasks.refresh_stale_listings",
+        "schedule": 1800.0,  # every 30 min: queue scrapes for stores with stale prices
     },
 }
 

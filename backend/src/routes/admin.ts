@@ -188,6 +188,106 @@ adminRouter.get("/analytics", async (_req: Request, res: Response) => {
   });
 });
 
+// ─── Scraper Health & Listing Verification ──────────
+
+adminRouter.get("/scraper-health", async (_req: Request, res: Response) => {
+  const now = Date.now();
+  const dayAgo = new Date(now - 24 * 60 * 60 * 1000);
+  const hour12Ago = new Date(now - 12 * 60 * 60 * 1000);
+
+  const [perStore, statusCounts, recentRuns, deadCount, suspiciousCount] = await Promise.all([
+    prisma.$queryRaw<
+      Array<{
+        store_id: string;
+        store_name: string;
+        store_slug: string;
+        total_listings: bigint;
+        verified: bigint;
+        suspicious: bigint;
+        dead: bigint;
+        stale_listings: bigint;
+        avg_minutes_since_verify: number | null;
+      }>
+    >`
+      SELECT
+        s.id AS store_id,
+        s.name AS store_name,
+        s.slug AS store_slug,
+        COUNT(l.id) AS total_listings,
+        COUNT(*) FILTER (WHERE l.verification_status = 'VERIFIED') AS verified,
+        COUNT(*) FILTER (WHERE l.verification_status = 'SUSPICIOUS') AS suspicious,
+        COUNT(*) FILTER (WHERE l.verification_status = 'DEAD') AS dead,
+        COUNT(*) FILTER (WHERE l.last_verified_at IS NULL OR l.last_verified_at < ${hour12Ago}) AS stale_listings,
+        AVG(EXTRACT(EPOCH FROM (NOW() - l.last_verified_at)) / 60) AS avg_minutes_since_verify
+      FROM "Store" s
+      LEFT JOIN "Listing" l ON l.store_id = s.id AND l.is_active = true
+      WHERE s.is_active = true
+      GROUP BY s.id, s.name, s.slug
+      ORDER BY s.name ASC
+    `,
+    prisma.listing.groupBy({
+      by: ["verificationStatus"],
+      where: { isActive: true },
+      _count: { id: true },
+    }),
+    prisma.scraperRun.groupBy({
+      by: ["status"],
+      where: { startedAt: { gte: dayAgo } },
+      _count: { id: true },
+    }),
+    prisma.listing.count({ where: { verificationStatus: "DEAD" } }),
+    prisma.listing.count({ where: { verificationStatus: "SUSPICIOUS", isActive: true } }),
+  ]);
+
+  res.json({
+    perStore: perStore.map((r) => ({
+      storeId: r.store_id,
+      storeName: r.store_name,
+      storeSlug: r.store_slug,
+      totalListings: Number(r.total_listings),
+      verified: Number(r.verified),
+      suspicious: Number(r.suspicious),
+      dead: Number(r.dead),
+      staleListings: Number(r.stale_listings),
+      avgMinutesSinceVerify: r.avg_minutes_since_verify ? Math.round(r.avg_minutes_since_verify) : null,
+      verifiedRatio: Number(r.total_listings) > 0 ? Number(r.verified) / Number(r.total_listings) : null,
+    })),
+    statusBreakdown: Object.fromEntries(statusCounts.map((s) => [s.verificationStatus, s._count.id])),
+    runs24h: Object.fromEntries(recentRuns.map((r) => [r.status, r._count.id])),
+    totals: { deadListings: deadCount, suspiciousActiveListings: suspiciousCount },
+  });
+});
+
+adminRouter.get("/listings/dead", async (req: Request, res: Response) => {
+  const { page = "1" } = req.query;
+  const skip = (parseInt(page as string) - 1) * 50;
+  const [listings, total] = await Promise.all([
+    prisma.listing.findMany({
+      where: { verificationStatus: "DEAD" },
+      orderBy: { lastFailedAt: "desc" },
+      skip,
+      take: 50,
+      include: {
+        store: { select: { name: true, slug: true } },
+        product: { select: { title: true, slug: true } },
+      },
+    }),
+    prisma.listing.count({ where: { verificationStatus: "DEAD" } }),
+  ]);
+  res.json({ listings, pagination: { page: parseInt(page as string), total, pages: Math.ceil(total / 50) } });
+});
+
+adminRouter.post("/listings/:id/revive", async (req: Request, res: Response) => {
+  const listing = await prisma.listing.update({
+    where: { id: req.params.id },
+    data: { isActive: true, verificationStatus: "UNVERIFIED", consecutiveFailures: 0 },
+  });
+  await prisma.auditLog.create({
+    data: { userId: req.user!.id, action: "LISTING_REVIVE", entity: "Listing", entityId: listing.id, details: {} },
+  });
+  res.json(listing);
+});
+
 // ─── Audit Log ───────────────────────────────────────
 
 adminRouter.get("/audit-log", async (req: Request, res: Response) => {

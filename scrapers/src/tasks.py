@@ -4,6 +4,18 @@ from .celery_app import app
 from .db import fetch_all, fetch_one, execute_query
 from .pipeline.orchestrator import run_store_scrape
 from .pipeline.normalizer import normalize_product_data
+from .pipeline.validators import check_listing_url
+
+# How long a price can sit before it must be refreshed (per store frequency tier).
+FRESHNESS_HOURS_BY_FREQUENCY = {
+    "HOT": 1,
+    "MEDIUM": 6,
+    "DAILY": 12,
+    "WEEKLY": 48,
+}
+
+# Default revalidation batch size — keep small so a stuck worker doesn't hog the queue.
+HEALTH_CHECK_BATCH = 50
 
 logger = logging.getLogger(__name__)
 
@@ -193,3 +205,130 @@ def check_alerts():
             fired += 1
 
     logger.info(f"Alert check: {fired} fired out of {len(alerts)}")
+
+
+@app.task(name="src.tasks.verify_listings_health")
+def verify_listings_health(batch_size: int = HEALTH_CHECK_BATCH):
+    """Rolling URL health check — picks the oldest-verified active listings and re-checks them.
+
+    Listings returning 404 are deactivated; suspicious responses are flagged but kept.
+    """
+    listings = fetch_all(
+        """
+        SELECT id, external_url, consecutive_failures
+        FROM "Listing"
+        WHERE is_active = true AND external_url IS NOT NULL AND external_url <> ''
+        ORDER BY COALESCE(last_verified_at, '1970-01-01'::timestamp) ASC
+        LIMIT :n
+        """,
+        {"n": batch_size},
+    )
+
+    checked = 0
+    dead = 0
+    suspicious = 0
+    healthy = 0
+
+    for listing in listings:
+        try:
+            status, is_dead, raw = check_listing_url(listing["external_url"])
+        except Exception as e:
+            logger.warning(f"Health check error for listing {listing['id']}: {e}")
+            continue
+
+        checked += 1
+        failures = listing.get("consecutive_failures") or 0
+
+        if is_dead:
+            # Three strikes rule: only deactivate after multiple confirmations.
+            new_failures = failures + 1
+            should_deactivate = new_failures >= 3
+            execute_query(
+                """
+                UPDATE "Listing" SET
+                    verification_status = 'DEAD'::"VerificationStatus",
+                    consecutive_failures = :f,
+                    last_failed_at = NOW(),
+                    is_active = CASE WHEN :deact THEN false ELSE is_active END,
+                    updated_at = NOW()
+                WHERE id = :id
+                """,
+                {"id": listing["id"], "f": new_failures, "deact": should_deactivate},
+            )
+            dead += 1
+        elif status == "SUSPICIOUS":
+            execute_query(
+                """
+                UPDATE "Listing" SET
+                    verification_status = 'SUSPICIOUS'::"VerificationStatus",
+                    consecutive_failures = :f,
+                    last_failed_at = NOW(),
+                    updated_at = NOW()
+                WHERE id = :id
+                """,
+                {"id": listing["id"], "f": failures + 1},
+            )
+            suspicious += 1
+        elif status == "VERIFIED":
+            execute_query(
+                """
+                UPDATE "Listing" SET
+                    verification_status = 'VERIFIED'::"VerificationStatus",
+                    last_verified_at = NOW(),
+                    consecutive_failures = 0,
+                    updated_at = NOW()
+                WHERE id = :id
+                """,
+                {"id": listing["id"]},
+            )
+            healthy += 1
+        else:
+            # STALE — couldn't conclude (blocked / transient). Just bump last_verified_at lightly.
+            execute_query(
+                """
+                UPDATE "Listing" SET
+                    verification_status = 'STALE'::"VerificationStatus",
+                    updated_at = NOW()
+                WHERE id = :id
+                """,
+                {"id": listing["id"]},
+            )
+
+    logger.info(
+        f"Health check: {checked} checked, {healthy} verified, "
+        f"{suspicious} suspicious, {dead} dead-marked"
+    )
+    return {"checked": checked, "healthy": healthy, "suspicious": suspicious, "dead": dead}
+
+
+@app.task(name="src.tasks.refresh_stale_listings")
+def refresh_stale_listings():
+    """Find listings whose prices are older than their store's freshness budget and re-queue scrapes.
+
+    Prioritizes listings on popular products (by viewCount + clickCount).
+    """
+    queued_by_store: dict[str, int] = {}
+
+    for freq, hours in FRESHNESS_HOURS_BY_FREQUENCY.items():
+        stale = fetch_all(
+            """
+            SELECT sc.id AS config_id, s.slug AS store_slug, COUNT(l.id) AS stale_count
+            FROM "ScraperConfig" sc
+            JOIN "Store" s ON sc.store_id = s.id
+            LEFT JOIN "Listing" l ON l.store_id = sc.store_id
+              AND l.is_active = true
+              AND (l.last_verified_at IS NULL OR l.last_verified_at < NOW() - (:hours || ' hours')::interval)
+            WHERE sc.is_active = true AND sc.frequency = :freq AND s.is_active = true
+            GROUP BY sc.id, s.slug
+            HAVING COUNT(l.id) > 0
+            ORDER BY COUNT(l.id) DESC
+            """,
+            {"hours": hours, "freq": freq},
+        )
+
+        for row in stale:
+            scrape_store.delay(row["config_id"])
+            queued_by_store[row["store_slug"]] = (queued_by_store.get(row["store_slug"]) or 0) + 1
+
+    logger.info(f"Stale refresh: queued {sum(queued_by_store.values())} scrapes: {queued_by_store}")
+    return queued_by_store

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ExternalLink, Truck, RotateCcw, CreditCard, Shield, Star } from "lucide-react";
 import { formatPrice } from "@/lib/api";
 import type { Listing } from "@/types";
+import { FreshnessBadge } from "@/components/shared/FreshnessBadge";
 
 export function PriceComparisonTable({ listings }: { listings: Listing[] }) {
   if (!listings.length) return null;
@@ -46,6 +47,11 @@ export function PriceComparisonTable({ listings }: { listings: Listing[] }) {
                         <Star size={10} className="fill-accent-500 text-accent-500" /> {listing.store.rating}
                       </span>
                     )}
+                    <FreshnessBadge
+                      lastVerifiedAt={listing.lastVerifiedAt}
+                      verificationStatus={listing.verificationStatus}
+                      priceConfidence={listing.priceConfidence}
+                    />
                   </div>
 
                   <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-gray-500">
